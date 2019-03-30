@@ -1,5 +1,5 @@
 ### Introduction
-These implementations of popular deep reinforcement learning algorithms are meant to be as simple as possible.  It should be good for really learning and understanding the essence of the algorithm without getting bogged down in extraneous details.  Feel free to use it as a working baseline and extend it to suit your needs.
+These implementations of popular deep reinforcement learning algorithms are meant to be as simple as possible.  It should be good for really learning and understanding the essence of the algorithms without getting bogged down in extraneous details or unnecessary abstractions.  Feel free to use it as a working baseline and extend it to suit your needs.
 
 It is a modern implementation that uses PyTorch 1.0 and python 3.6.
 
@@ -14,6 +14,28 @@ The following algorithms have been implemented:
 - REINFORCE
 - REINFORCE multiprocessing
 
+
+
+### Dependencies
+- python 3.6
+- pytorch 1.0
+- gym
+
+
+### Quick Start
+First create a virtual environment with all the dependencies installed:
+```
+conda create -y -n simple_rl python=3.6 anaconda
+conda activate simple_rl
+conda install -y pytorch torchvision -c pytorch
+pip install gym
+```
+
+Then just select the algorithm you want to use and run the train script.
+```
+cd dqn
+python train.py
+```
 
 
 
