@@ -18,13 +18,14 @@ class Agent():
     def __init__(self, models,
                  buffer_size=int(1e5),
                  batch_size=64,
-                 tau=1e-3,
+                 update_freq=int(1e3),
                  lr=5e-4):
 
         self.batch_size = batch_size
-        self.tau = tau
+        self.update_freq = update_freq
+        self.model_updates = 0
 
-        # initialize live and fixed q networks with same initial values
+        # initialize q_net and target_net with same initial values
         self.q_net, self.target_net = models
         self.target_net.load_state_dict(self.q_net.state_dict())
 
@@ -50,18 +51,22 @@ class Agent():
 
 
     def learn(self, experience, gamma):
-        """Learn from experience."""
+        """Learn by sampling minibatches of experience from replay buffer."""
+        # add latest experience to memory
         self.memory.add(*experience)
 
         # if enough samples are available in memory, get random subset and learn
         if len(self.memory) > self.batch_size:
             experiences = self.memory.sample()
             self._backprop_loss(experiences, gamma)
-            self._soft_update(self.q_net, self.target_net, self.tau)
+            self.model_updates += 1
+            # replace target_net parameters with q_net ones every update_freq parameter updates
+            if self.model_updates % self.update_freq == 0:
+                self.target_net.load_state_dict(self.q_net.state_dict())
 
 
     def _backprop_loss(self, experiences, gamma):
-        """Update live model weights using mini-batches of experience."""
+        """Update q network parameters using mini-batches of experience."""
         states, actions, rewards, next_states, dones = experiences
         # get q values for chosen actions
         q_expected = self.q_net(states).gather(1, actions)
@@ -74,9 +79,3 @@ class Agent():
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
-
-
-    def _soft_update(self, q_net, target_net, tau):
-        """Update fixed model weights."""
-        for fixed_param, live_param in zip(target_net.parameters(), q_net.parameters()):
-            fixed_param.data.copy_(tau*live_param.data + (1.0-tau)*fixed_param.data)
