@@ -1,8 +1,6 @@
 import torch
 import numpy as np
 import gym
-import matplotlib.pyplot as plt
-gym.logger.set_level(40)
 
 
 def get_device():
@@ -20,7 +18,7 @@ def make_env(env_name, max_episode_steps=None):
     return _thunk
 
 
-def moving_average(values, window=20):
+def moving_average(values, window=100):
     """Calculate moving average over window."""
     weights = np.repeat(1.0, window)/window
     return np.convolve(values, weights, 'valid')
@@ -44,20 +42,15 @@ def normalize(rewards):
     return (rewards - mean) / (std)
 
 
-def plot_results(all_rewards):
-    """Plot results."""
-    clear_output(True)
-    plt.figure(figsize=(6, 5))
-    plt.subplot(111)
-    plt.title('return')
-    plt.plot(moving_average(all_rewards))
-    plt.show()
-    print(f'Episode: {len(all_rewards)}  |  Return: {all_rewards[-1]}')
-
-
-def print_results(all_rewards):
+def print_results(returns):
     """Print results."""
-    print(f'Episode: {len(all_rewards)}  |  Return: {all_rewards[-1]}  Avg: {moving_average(all_rewards)[-1]:.2f}')
+    smoothed_returns = moving_average(returns)
+    i_episode = len(returns)
+    i_ret = returns[-1]
+    i_avg_ret = smoothed_returns[-1]
+    max_avg_ret = np.max(smoothed_returns)
+
+    print(f'episode: {i_episode} return: {i_ret:.2f} avg: {i_avg_ret:.2f} | max_avg: {max_avg_ret:.2f}')
 
 
 def flatten_a(values):

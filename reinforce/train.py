@@ -28,7 +28,7 @@ agent = Agent(model)
 
 
 # training loop
-all_rewards = []
+returns = []
 
 for i_episode in range(1, n_episodes+1):
     rewards, log_probs = [], []
@@ -40,14 +40,14 @@ for i_episode in range(1, n_episodes+1):
         log_probs.append(log_prob)
         rewards.append(reward)
         if done:
-            all_rewards.append(sum(rewards))
+            returns.append(sum(rewards))
             break
 
     rewards = normalize(discount(rewards, gamma))  # normalize discounted rewards
     agent.learn(rewards, log_probs)                # update model weights
 
     if i_episode % 20 == 0:
-        print_results(all_rewards)
+        print_results(returns)
 
 env.close()
 

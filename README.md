@@ -28,7 +28,7 @@ First create a virtual environment with all the dependencies installed:
 conda create -y -n simple_rl python=3.6 anaconda
 conda activate simple_rl
 conda install -y pytorch torchvision -c pytorch
-pip install gym
+pip install gym box2d-py
 ```
 
 Then just select the algorithm you want to use and run the train script.

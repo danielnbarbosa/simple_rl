@@ -33,7 +33,7 @@ agent = VectorizedAgent(model)
 
 
 # training loop
-all_rewards = []
+returns = []
 
 for i_episode in range(1, n_episodes+1):
     # sticky done, as done flag from environment does not persist across steps
@@ -61,9 +61,9 @@ for i_episode in range(1, n_episodes+1):
     # backprop gradient across all rollouts using normalized rewards
     agent.learn(normalize(discounted_rewards), log_probs)
     # use raw rewards to calcuate return per episode averaged across number of rollouts
-    all_rewards.append(np.sum(rewards) / num_envs)
+    returns.append(np.sum(rewards) / num_envs)
     if i_episode % 20 == 0:
-        print_results(all_rewards)
+        print_results(returns)
 
 envs.close()
 
