@@ -1,12 +1,12 @@
 ### Summary
-DQN merges traditional Q-learning with a deep neural network.  It uses value iteration to approximate the optimal action-value function.  It has the following characteristics:
+DQN merges traditional Q-learning with a deep neural network.  It uses value iteration to approximate the optimal action-value function.  For more details see the original [paper](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf.)  It has the following characteristics:
 - Value based
 - Model free
 - Off policy
 - Temporal difference method
 - Continuous state space
 - Discrete action space
-For more details see the original [paper](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf.)
+
 
 ### Model
 This is a straightforward multi-layer perceptron with RELU activations on the hidden layers.  It uses two layers, which is just enough to be considered deep, and adequate for low dimensional state spaces.  It outputs the predicted Q values for all actions.

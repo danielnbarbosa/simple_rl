@@ -1,8 +1,6 @@
 ### Introduction
 These implementations of popular deep reinforcement learning algorithms are meant to be as simple as possible.  It should be good for really learning and understanding the essence of the algorithms without getting bogged down in extraneous details or unnecessary abstractions.  Feel free to use it as a working baseline and extend it to suit your needs.
 
-It is a modern implementation that uses PyTorch 1.0 and python 3.6.
-
 
 ### Environments
 All examples use the OpenAI gym CartPole-v0 environment because it is a simple one that converges relatively quickly.  It's a good first step when testing any new RL algorithm.
@@ -13,7 +11,6 @@ The following algorithms have been implemented:
 - DQN
 - REINFORCE
 - REINFORCE multiprocessing
-
 
 
 ### Dependencies
@@ -30,13 +27,11 @@ conda activate simple_rl
 conda install -y pytorch torchvision -c pytorch
 pip install gym box2d-py
 ```
-
 Then just select the algorithm you want to use and run the train script.
 ```
 cd dqn
 python train.py
 ```
-
 
 
 ### Acknowledgements
