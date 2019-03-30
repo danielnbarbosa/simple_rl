@@ -1,5 +1,5 @@
 ### Summary
-DQN merges traditional Q-learning with a deep neural network.  It uses value iteration to approximate the optimal action-value function.  For more details see the original [paper](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf.)  It has the following characteristics:
+DQN merges traditional Q-learning with a deep neural network.  It uses value iteration to approximate the optimal action-value function.  For more details see the original [paper](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf).  It has the following characteristics:
 - Value based
 - Model free
 - Off policy
