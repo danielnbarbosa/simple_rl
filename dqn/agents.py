@@ -25,10 +25,10 @@ class Agent():
         self.tau = tau
 
         # initialize live and fixed q networks with same initial values
-        self.live_net, self.fixed_net = models
-        self.fixed_net.load_state_dict(self.live_net.state_dict())
+        self.q_net, self.target_net = models
+        self.target_net.load_state_dict(self.q_net.state_dict())
 
-        self.optimizer = optim.Adam(self.live_net.parameters(), lr=lr)
+        self.optimizer = optim.Adam(self.q_net.parameters(), lr=lr)
         self.memory = ReplayBuffer(buffer_size, self.batch_size)
 
 
@@ -36,10 +36,10 @@ class Agent():
         """Given a state, determine the next action."""
         state = torch.from_numpy(state).float().unsqueeze(0).to(device)
         # calculate action values
-        self.live_net.eval()
+        self.q_net.eval()
         with torch.no_grad():
-            action_values = self.live_net(state)
-        self.live_net.train()
+            action_values = self.q_net(state)
+        self.q_net.train()
 
         # epsilon-greedy action selection
         action_size = len(action_values.squeeze())
@@ -57,16 +57,16 @@ class Agent():
         if len(self.memory) > self.batch_size:
             experiences = self.memory.sample()
             self._backprop_loss(experiences, gamma)
-            self._soft_update(self.live_net, self.fixed_net, self.tau)
+            self._soft_update(self.q_net, self.target_net, self.tau)
 
 
     def _backprop_loss(self, experiences, gamma):
         """Update live model weights using mini-batches of experience."""
         states, actions, rewards, next_states, dones = experiences
         # get q values for chosen actions
-        q_expected = self.live_net(states).gather(1, actions)
+        q_expected = self.q_net(states).gather(1, actions)
         # get max q values for next_states using the fixed network
-        q_targets_next = self.fixed_net(next_states).detach().max(1)[0].unsqueeze(1)
+        q_targets_next = self.target_net(next_states).detach().max(1)[0].unsqueeze(1)
         # calculate q values for current states
         q_targets = rewards + (gamma * q_targets_next * (1 - dones))
 
@@ -76,7 +76,7 @@ class Agent():
         self.optimizer.step()
 
 
-    def _soft_update(self, live_net, fixed_net, tau):
+    def _soft_update(self, q_net, target_net, tau):
         """Update fixed model weights."""
-        for fixed_param, live_param in zip(fixed_net.parameters(), live_net.parameters()):
+        for fixed_param, live_param in zip(target_net.parameters(), q_net.parameters()):
             fixed_param.data.copy_(tau*live_param.data + (1.0-tau)*fixed_param.data)

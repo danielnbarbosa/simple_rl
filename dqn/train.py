@@ -10,8 +10,6 @@ from functions import print_results, get_device
 from agents import Agent
 from models import TwoLayerMLP
 
-gym.logger.set_level(40)
-
 # create environment
 env_name = 'CartPole-v0'
 env = gym.make(env_name)
@@ -29,9 +27,9 @@ eps_end = 0.01
 eps_decay = 0.99
 # create agent
 device = get_device()
-live_model = TwoLayerMLP((state_size, *hidden_size, action_size)).to(device)
-fixed_model = TwoLayerMLP((state_size, *hidden_size, action_size)).to(device)
-models = (live_model, fixed_model)
+q_net = TwoLayerMLP((state_size, *hidden_size, action_size)).to(device)
+target_net = TwoLayerMLP((state_size, *hidden_size, action_size)).to(device)
+models = (q_net, target_net)
 agent = Agent(models)
 
 

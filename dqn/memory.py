@@ -12,7 +12,6 @@ device = get_device()
 
 class ReplayBuffer():
     """Fixed-size buffer to store experience tuples."""
-
     def __init__(self, buffer_size, batch_size):
         self.memory = deque(maxlen=buffer_size)
         self.batch_size = batch_size

@@ -11,7 +11,7 @@ def get_device():
     return torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-def moving_average(values, window=20):
+def moving_average(values, window=100):
     """Calculate moving average over window."""
     weights = np.repeat(1.0, window)/window
     return np.convolve(values, weights, 'valid')
