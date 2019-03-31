@@ -3,7 +3,7 @@ These implementations of popular deep reinforcement learning algorithms are mean
 
 
 ### Environments
-All examples use the OpenAI gym CartPole-v0 environment by default, because it is a simple one that converges relatively quickly.  It's a good first step when testing any new RL algorithm.  Acrobot-v1 and LunarLander-v2 also work well with the same hyperparameters.
+All examples use the OpenAI gym CartPole-v0 environment by default because it is a simple one that converges relatively quickly.  It's a good first step when testing any new RL algorithm.  Acrobot-v1 and LunarLander-v2 also work well with the same hyperparameters.
 
 
 ### Algorithms
@@ -30,7 +30,7 @@ pip install gym box2d-py
 
 Then just select the algorithm you want to use and start training: `cd dqn; python run.py`
 
-When training finishes you can see evaluate the model: `python run.py --eval`
+When training finishes you can evaluate the model: `python run.py --eval`
 
 You can also run on other environments: `python run.py --env Acrobot-v1`
 
