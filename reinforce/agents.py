@@ -1,3 +1,8 @@
+"""
+Agent: works with a single environment.
+VectorizedAgent: works with multiple parallel environments.
+"""
+
 import torch
 import torch.optim as optim
 from torch.distributions import Categorical

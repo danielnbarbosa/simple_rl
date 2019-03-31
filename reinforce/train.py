@@ -18,7 +18,6 @@ def train(n_episodes=100, max_t=1000, gamma=0.99):
     agent = Agent(model)
 
     returns = []
-
     for i_episode in range(1, n_episodes+1):
         rewards, log_probs = [], []
         state = env.reset()
@@ -41,8 +40,7 @@ def train(n_episodes=100, max_t=1000, gamma=0.99):
     env.close()
 
 
-
-def eval(n_episodes=1, max_t=1000, render=True):
+def evaluate(n_episodes=1, max_t=1000, render=True):
     """Evaluation loop."""
     env = create_env(env_name, max_t)
     model = create_model(env, hidden_size)
@@ -55,7 +53,8 @@ def eval(n_episodes=1, max_t=1000, render=True):
         state = env.reset()
 
         for t in range(1, max_t+1):
-            if render: env.render()
+            if render:
+                env.render()
             action, _ = agent.act(state)                    # select an action
             state, reward, done, _ = env.step(action)       # take action in environment
             rewards.append(reward)
@@ -69,4 +68,4 @@ def eval(n_episodes=1, max_t=1000, render=True):
 
 # main
 train()
-eval()
+evaluate()

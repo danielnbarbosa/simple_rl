@@ -1,15 +1,28 @@
+"""
+Auxillary functions.
+"""
+
 import torch
 import numpy as np
 import gym
 from models import TwoLayerMLP
+from multiprocessing_env import SubprocVecEnv
+
 
 def get_device():
     """Check if GPU is is_available."""
     return torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-def create_envs(env_name, max_episode_steps=None):
-    """Create a gym environment when using vectorized environments."""
+def create_env(env_name, max_episode_steps):
+    """Create a single gym environment."""
+    env = gym.make(env_name)
+    env._max_episode_steps = 1000
+    return env
+
+
+def make_env(env_name, max_episode_steps=None):
+    """Create a gym environment instance when using vectorized environments."""
     def _thunk():
         env = gym.make(env_name)
         if max_episode_steps:
@@ -18,13 +31,16 @@ def create_envs(env_name, max_episode_steps=None):
     return _thunk
 
 
-def create_env(env_name, max_episode_steps):
-    env = gym.make(env_name)
-    env._max_episode_steps = 1000
-    return env
+def create_envs(env_name, max_episode_steps, num_envs):
+    """Create multiple gym environments."""
+    envs = [make_env(env_name, max_episode_steps) for i in range(num_envs)]
+    envs = SubprocVecEnv(envs)
+    print(f'Parallel Environments: {envs.num_envs}')
+    return envs
 
 
 def create_model(env, hidden_size):
+    """Create a model based on an environment."""
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n
     device = get_device()

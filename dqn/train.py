@@ -47,7 +47,7 @@ def train(n_episodes=100, max_t=1000, gamma=0.99, eps_start=1.0, eps_end=0.01, e
     env.close()
 
 
-def eval(n_episodes=1, max_t=1000, eps=0.05, render=True):
+def evaluate(n_episodes=1, max_t=1000, eps=0.05, render=True):
     """Evaluation loop."""
     env = create_env(env_name, max_t)
     q_net, target_net = create_models(env, hidden_size)
@@ -61,7 +61,8 @@ def eval(n_episodes=1, max_t=1000, eps=0.05, render=True):
         state = env.reset()
 
         for t in range(1, max_t+1):
-            if render: env.render()
+            if render:
+                env.render()
             action = agent.act(state, eps)                   # select an action
             state, reward, done, _ = env.step(action)   # take action in environment
             episode_return += reward
@@ -76,4 +77,4 @@ def eval(n_episodes=1, max_t=1000, eps=0.05, render=True):
 
 # main
 train()
-eval()
+evaluate()

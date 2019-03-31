@@ -14,12 +14,14 @@ def get_device():
 
 
 def create_env(env_name, max_episode_steps):
+    """Create a single gym environment."""
     env = gym.make(env_name)
     env._max_episode_steps = 1000
     return env
 
 
 def create_models(env, hidden_size):
+    """Create models based on an environment."""
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n
     device = get_device()
