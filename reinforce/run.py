@@ -2,19 +2,16 @@
 Training and evaluation runners.
 """
 
+import argparse
 import torch
 from functions import create_env, create_model, discount, normalize, print_results
 from agents import Agent
 
 
-env_name = 'CartPole-v0'
-hidden_size = (16, 16)
-
-
 def train(n_episodes=1000, max_t=1000, gamma=0.99):
     """Training loop."""
     env = create_env(env_name, max_t)
-    model = create_model(env, hidden_size)
+    model = create_model(env, hidden_size=(16, 16))
     agent = Agent(model)
 
     returns = []
@@ -43,7 +40,7 @@ def train(n_episodes=1000, max_t=1000, gamma=0.99):
 def evaluate(n_episodes=10, max_t=1000, render=True):
     """Evaluation loop."""
     env = create_env(env_name, max_t)
-    model = create_model(env, hidden_size)
+    model = create_model(env, hidden_size=(16, 16))
     model.load_state_dict(torch.load('model.pth'))
     agent = Agent(model)
 
@@ -67,5 +64,15 @@ def evaluate(n_episodes=10, max_t=1000, render=True):
 
 
 # main
-train()
-evaluate()
+parser = argparse.ArgumentParser()
+parser.add_argument('--env', help='environment name', type=str, default='CartPole-v0')
+parser.add_argument('--eval', help='evaluate (instead of train)', action='store_true')
+args = parser.parse_args()
+
+env_name = args.env
+print(f'Environment: {env_name}')
+
+if args.eval:
+    evaluate()
+else:
+    train()

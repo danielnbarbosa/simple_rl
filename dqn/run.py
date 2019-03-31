@@ -2,6 +2,7 @@
 Training and evaluation runners.
 """
 
+import argparse
 from collections import namedtuple
 import torch
 import numpy as np
@@ -9,14 +10,10 @@ from functions import create_env, create_models, print_results
 from agents import Agent
 
 
-env_name = 'CartPole-v0'
-hidden_size = (128, 128)
-
-
 def train(n_episodes=1000, max_t=1000, gamma=0.99, eps_start=1.0, eps_end=0.01, eps_decay=0.99):
     """Training loop."""
     env = create_env(env_name, max_t)
-    models = create_models(env, hidden_size)
+    models = create_models(env, hidden_size=(128, 128))
     agent = Agent(models)
 
     result = namedtuple("Result", field_names=["episode_return", "epsilon", "buffer_len"])
@@ -50,7 +47,7 @@ def train(n_episodes=1000, max_t=1000, gamma=0.99, eps_start=1.0, eps_end=0.01, 
 def evaluate(n_episodes=10, max_t=1000, eps=0.05, render=True):
     """Evaluation loop."""
     env = create_env(env_name, max_t)
-    q_net, target_net = create_models(env, hidden_size)
+    q_net, target_net = create_models(env, hidden_size=(128, 128))
     q_net.load_state_dict(torch.load('model.pth'))
     agent = Agent((q_net, target_net))
 
@@ -76,5 +73,15 @@ def evaluate(n_episodes=10, max_t=1000, eps=0.05, render=True):
 
 
 # main
-train()
-evaluate()
+parser = argparse.ArgumentParser()
+parser.add_argument('--env', help='environment name', type=str, default='CartPole-v0')
+parser.add_argument('--eval', help='evaluate (instead of train)', action='store_true')
+args = parser.parse_args()
+
+env_name = args.env
+print(f'Environment: {env_name}')
+
+if args.eval:
+    evaluate()
+else:
+    train()
