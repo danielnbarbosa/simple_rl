@@ -13,7 +13,7 @@ env_name = 'CartPole-v0'
 hidden_size = (128, 128)
 
 
-def train(n_episodes=100, max_t=1000, gamma=0.99, eps_start=1.0, eps_end=0.01, eps_decay=0.99):
+def train(n_episodes=1000, max_t=1000, gamma=0.99, eps_start=1.0, eps_end=0.01, eps_decay=0.99):
     """Training loop."""
     env = create_env(env_name, max_t)
     models = create_models(env, hidden_size)
@@ -47,7 +47,7 @@ def train(n_episodes=100, max_t=1000, gamma=0.99, eps_start=1.0, eps_end=0.01, e
     env.close()
 
 
-def evaluate(n_episodes=1, max_t=1000, eps=0.05, render=True):
+def evaluate(n_episodes=10, max_t=1000, eps=0.05, render=True):
     """Evaluation loop."""
     env = create_env(env_name, max_t)
     q_net, target_net = create_models(env, hidden_size)
