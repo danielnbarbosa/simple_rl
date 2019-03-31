@@ -3,31 +3,21 @@ Training and evaluation runners.
 """
 
 from collections import namedtuple
-import gym
 import torch
 import numpy as np
-from functions import print_results, get_device
+from functions import create_env, create_models, print_results
 from agents import Agent
-from models import TwoLayerMLP
 
-# create environment
+
 env_name = 'CartPole-v0'
-env = gym.make(env_name)
-env._max_episode_steps = 1000
-# define size of model layers
-state_size = env.observation_space.shape[0]
-action_size = env.action_space.n
 hidden_size = (128, 128)
-# create models
-device = get_device()
-q_net = TwoLayerMLP((state_size, *hidden_size, action_size)).to(device)
-target_net = TwoLayerMLP((state_size, *hidden_size, action_size)).to(device)
 
 
 def train(n_episodes=100, max_t=1000, gamma=0.99, eps_start=1.0, eps_end=0.01, eps_decay=0.99):
     """Training loop."""
-    # create agent
-    agent = Agent((q_net, target_net))
+    env = create_env(env_name, max_t)
+    models = create_models(env, hidden_size)
+    agent = Agent(models)
 
     result = namedtuple("Result", field_names=["episode_return", "epsilon", "buffer_len"])
     results = []
@@ -54,11 +44,13 @@ def train(n_episodes=100, max_t=1000, gamma=0.99, eps_start=1.0, eps_end=0.01, e
         if i_episode % 20 == 0:
             torch.save(agent.q_net.state_dict(), 'model.pth')
             print_results(results)
+    env.close()
 
 
 def eval(n_episodes=1, max_t=1000, eps=0.05, render=True):
     """Evaluation loop."""
-    # create agent from saved model
+    env = create_env(env_name, max_t)
+    q_net, target_net = create_models(env, hidden_size)
     q_net.load_state_dict(torch.load('model.pth'))
     agent = Agent((q_net, target_net))
 
@@ -79,9 +71,9 @@ def eval(n_episodes=1, max_t=1000, eps=0.05, render=True):
                 break
 
         print_results(results)
+    env.close()
 
 
 # main
 train()
 eval()
-env.close()

@@ -3,37 +3,23 @@ Training and evaluation runners.
 Support multiple parallel environments using OpenAI baselines vectorized environment.
 """
 
-import gym
 import torch
 import numpy as np
-from models import TwoLayerMLP
-from functions import make_env, flatten_rollouts, normalize, print_results, get_device
+from functions import create_env, create_envs, create_model, flatten_rollouts, normalize, print_results
 from agents import Agent, VectorizedAgent
 from multiprocessing_env import SubprocVecEnv
 
 
-# create multiple environments for training
 env_name = 'CartPole-v0'
-num_envs = 4
-max_episode_steps = 1000
-envs = [make_env(env_name, max_episode_steps) for i in range(num_envs)]
-envs = SubprocVecEnv(envs)
-print(f'Parallel Environments: {envs.num_envs}')
-# create single environment for evaluation
-env = gym.make(env_name)
-env._max_episode_steps = 1000
-# define size of model layers
-state_size = envs.observation_space.shape[0]
-action_size = envs.action_space.n
 hidden_size = (16, 16)
-# create model
-device = get_device()
-model = TwoLayerMLP((state_size, *hidden_size, action_size)).to(device)
 
 
-def train(n_episodes=100, max_t=1000, gamma=0.99):
+def train(n_episodes=100, max_t=1000, gamma=0.99, num_envs=4):
     """Training loop."""
-    # create agents
+    envs = [create_envs(env_name, max_t) for i in range(num_envs)]
+    envs = SubprocVecEnv(envs)
+    print(f'Parallel Environments: {envs.num_envs}')
+    model = create_model(envs, hidden_size)
     agent = VectorizedAgent(model)
 
     returns = []
@@ -68,12 +54,14 @@ def train(n_episodes=100, max_t=1000, gamma=0.99):
         if i_episode % 20 == 0:
             torch.save(agent.model.state_dict(), 'model.pth')
             print_results(returns)
+    envs.close()
 
 
 
 def eval(n_episodes=1, max_t=1000, render=True):
     """Evaluation loop."""
-    # create agent from saved model
+    env = create_env(env_name, max_t)
+    model = create_model(env, hidden_size)
     model.load_state_dict(torch.load('model.pth'))
     agent = Agent(model)
 
@@ -92,10 +80,9 @@ def eval(n_episodes=1, max_t=1000, render=True):
                 break
 
         print_results(returns)
+    env.close()
 
 
 # main
 train()
-envs.close()
 eval()
-env.close()

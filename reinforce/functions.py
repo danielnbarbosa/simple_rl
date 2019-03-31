@@ -1,14 +1,14 @@
 import torch
 import numpy as np
 import gym
-
+from models import TwoLayerMLP
 
 def get_device():
     """Check if GPU is is_available."""
     return torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-def make_env(env_name, max_episode_steps=None):
+def create_envs(env_name, max_episode_steps=None):
     """Create a gym environment when using vectorized environments."""
     def _thunk():
         env = gym.make(env_name)
@@ -16,6 +16,20 @@ def make_env(env_name, max_episode_steps=None):
             env._max_episode_steps = max_episode_steps
         return env
     return _thunk
+
+
+def create_env(env_name, max_episode_steps):
+    env = gym.make(env_name)
+    env._max_episode_steps = 1000
+    return env
+
+
+def create_model(env, hidden_size):
+    state_size = env.observation_space.shape[0]
+    action_size = env.action_space.n
+    device = get_device()
+    model = TwoLayerMLP((state_size, *hidden_size, action_size)).to(device)
+    return model
 
 
 def moving_average(values, window=100):

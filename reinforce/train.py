@@ -2,29 +2,19 @@
 Training and evaluation runners.
 """
 
-import gym
 import torch
-from models import TwoLayerMLP
-from functions import discount, normalize, print_results, get_device
+from functions import create_env, create_model, discount, normalize, print_results
 from agents import Agent
 
 
-# create environment
 env_name = 'CartPole-v0'
-env = gym.make(env_name)
-env._max_episode_steps = 1000
-# define size of model layers
-state_size = env.observation_space.shape[0]
-action_size = env.action_space.n
 hidden_size = (16, 16)
-# create model
-device = get_device()
-model = TwoLayerMLP((state_size, *hidden_size, action_size)).to(device)
 
 
 def train(n_episodes=100, max_t=1000, gamma=0.99):
     """Training loop."""
-    # create agent
+    env = create_env(env_name, max_t)
+    model = create_model(env, hidden_size)
     agent = Agent(model)
 
     returns = []
@@ -48,12 +38,14 @@ def train(n_episodes=100, max_t=1000, gamma=0.99):
         if i_episode % 20 == 0:
             torch.save(agent.model.state_dict(), 'model.pth')
             print_results(returns)
+    env.close()
 
 
 
 def eval(n_episodes=1, max_t=1000, render=True):
     """Evaluation loop."""
-    # create agent from saved model
+    env = create_env(env_name, max_t)
+    model = create_model(env, hidden_size)
     model.load_state_dict(torch.load('model.pth'))
     agent = Agent(model)
 
@@ -72,9 +64,9 @@ def eval(n_episodes=1, max_t=1000, render=True):
                 break
 
         print_results(returns)
+    env.close()
 
 
 # main
 train()
 eval()
-env.close()
