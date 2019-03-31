@@ -77,19 +77,21 @@ def eval(n_episodes=1, max_t=1000, render=True):
     model.load_state_dict(torch.load('model.pth'))
     agent = Agent(model)
 
+    returns = []
     for i_episode in range(1, n_episodes+1):
-        episode_return = 0
+        rewards = []
         state = env.reset()
 
         for t in range(1, max_t+1):
             if render: env.render()
             action, _ = agent.act(state)                    # select an action
             state, reward, done, _ = env.step(action)       # take action in environment
-            episode_return += reward
+            rewards.append(reward)
             if done:
+                returns.append(sum(rewards))
                 break
 
-        print(f'Episode: {i_episode}   Reward: {episode_return}')
+        print_results(returns)
 
 
 # main

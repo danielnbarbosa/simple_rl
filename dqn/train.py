@@ -62,6 +62,8 @@ def eval(n_episodes=1, max_t=1000, eps=0.05, render=True):
     q_net.load_state_dict(torch.load('model.pth'))
     agent = Agent((q_net, target_net))
 
+    result = namedtuple("Result", field_names=["episode_return", "epsilon", "buffer_len"])
+    results = []
     for i_episode in range(1, n_episodes+1):
         episode_return = 0
         state = env.reset()
@@ -72,9 +74,11 @@ def eval(n_episodes=1, max_t=1000, eps=0.05, render=True):
             state, reward, done, _ = env.step(action)   # take action in environment
             episode_return += reward
             if done:
+                r = result(episode_return, eps, 0)
+                results.append(r)
                 break
 
-        print(f'Episode: {i_episode}   Reward: {episode_return}')
+        print_results(results)
 
 
 # main

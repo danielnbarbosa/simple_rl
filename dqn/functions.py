@@ -20,7 +20,7 @@ def moving_average(values, window=100):
 def print_results(results):
     """Print results."""
     returns, epsilons, buffer_lens = zip(*results)
-    smoothed_returns = moving_average(returns)
+    smoothed_returns = moving_average(returns)  # need to gather at least window results before this is accurate
     i_episode = len(returns)
     i_ret = returns[-1]
     i_eps = epsilons[-1]
