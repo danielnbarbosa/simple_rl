@@ -7,9 +7,9 @@ import torch.nn as nn
 
 class TwoLayerMLP(nn.Module):
     """ MLP with two hidden layers."""
-    def __init__(self, layer_sizes):
+    def __init__(self, inputs, outputs):
         super(TwoLayerMLP, self).__init__()
-        inputs, fc1, fc2, outputs = layer_sizes
+        fc1, fc2 = (128, 128)
 
         self.layers = nn.Sequential(
             nn.Linear(inputs, fc1),

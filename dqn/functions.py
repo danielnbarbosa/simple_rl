@@ -20,13 +20,13 @@ def create_env(env_name, max_episode_steps):
     return env
 
 
-def create_models(env, hidden_size):
+def create_models(env):
     """Create models based on an environment."""
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n
     device = get_device()
-    q_net = TwoLayerMLP((state_size, *hidden_size, action_size)).to(device)
-    target_net = TwoLayerMLP((state_size, *hidden_size, action_size)).to(device)
+    q_net = TwoLayerMLP(state_size, action_size).to(device)
+    target_net = TwoLayerMLP(state_size, action_size).to(device)
     return (q_net, target_net)
 
 

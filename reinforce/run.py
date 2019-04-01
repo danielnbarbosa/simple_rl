@@ -11,7 +11,7 @@ from agents import Agent
 def train(n_episodes=1000, max_t=1000, gamma=0.99):
     """Training loop."""
     env = create_env(env_name, max_t)
-    model = create_model(env, hidden_size=(16, 16))
+    model = create_model(env)
     agent = Agent(model)
 
     returns = []
@@ -40,7 +40,7 @@ def train(n_episodes=1000, max_t=1000, gamma=0.99):
 def evaluate(n_episodes=10, max_t=1000, render=True):
     """Evaluation loop."""
     env = create_env(env_name, max_t)
-    model = create_model(env, hidden_size=(16, 16))
+    model = create_model(env)
     model.load_state_dict(torch.load('model.pth'))
     agent = Agent(model)
 

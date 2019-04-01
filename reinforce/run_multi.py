@@ -13,7 +13,7 @@ from agents import Agent, VectorizedAgent
 def train(n_episodes=1000, max_t=1000, gamma=0.99, num_envs=4):
     """Training loop."""
     envs = create_envs(env_name, max_t, num_envs)
-    model = create_model(envs, hidden_size=(16, 16))
+    model = create_model(envs)
     agent = VectorizedAgent(model)
 
     returns = []
@@ -53,7 +53,7 @@ def train(n_episodes=1000, max_t=1000, gamma=0.99, num_envs=4):
 def evaluate(n_episodes=10, max_t=1000, render=True):
     """Evaluation loop."""
     env = create_env(env_name, max_t)
-    model = create_model(env, hidden_size=(16, 16))
+    model = create_model(env)
     model.load_state_dict(torch.load('model.pth'))
     agent = Agent(model)
 
