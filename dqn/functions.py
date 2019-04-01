@@ -16,7 +16,7 @@ def get_device():
 def create_env(env_name, max_episode_steps):
     """Create a single gym environment."""
     env = gym.make(env_name)
-    env._max_episode_steps = 1000
+    env._max_episode_steps = max_episode_steps
     return env
 
 
@@ -39,12 +39,12 @@ def moving_average(values, window=100):
 def print_results(results):
     """Print results."""
     returns, epsilons, buffer_lens = zip(*results)
-    smoothed_returns = moving_average(returns)  # need to gather at least window results before this is accurate
+    smoothed_returns = moving_average(returns)
     i_episode = len(returns)
     i_ret = returns[-1]
     i_eps = epsilons[-1]
     i_buffer_len = buffer_lens[-1]
     i_avg_ret = smoothed_returns[-1]
     max_avg_ret = np.max(smoothed_returns)
-
+    # need to gather at least window results before moving average is accurate
     print(f'episode: {i_episode} return: {i_ret:.2f} eps: {i_eps:.2f} buff: {i_buffer_len} avg: {i_avg_ret:.2f} | max_avg: {max_avg_ret:.2f}')

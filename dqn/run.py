@@ -60,7 +60,7 @@ def evaluate(n_episodes=10, max_t=1000, eps=0.05, render=True):
         for t in range(1, max_t+1):
             if render:
                 env.render()
-            action = agent.act(state, eps)                   # select an action
+            action = agent.act(state, eps)              # select an action
             state, reward, done, _ = env.step(action)   # take action in environment
             episode_return += reward
             if done:
