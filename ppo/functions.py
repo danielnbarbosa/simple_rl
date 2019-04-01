@@ -72,15 +72,16 @@ def normalize(rewards):
     return (rewards - mean) / (std)
 
 
-def print_results(returns):
+def print_results(returns, epsilons):
     """Print results."""
     smoothed_returns = moving_average(returns)
     i_episode = len(returns)
     i_ret = returns[-1]
+    i_eps = epsilons[-1]
     i_avg_ret = smoothed_returns[-1]
     max_avg_ret = np.max(smoothed_returns)
     # need to gather at least window results before moving average is accurate
-    print(f'episode: {i_episode} return: {i_ret:.2f} avg: {i_avg_ret:.2f} | max_avg: {max_avg_ret:.2f}')
+    print(f'episode: {i_episode} return: {i_ret:.2f} eps: {i_eps:.2f} avg: {i_avg_ret:.2f} | max_avg: {max_avg_ret:.2f}')
 
 
 def flatten_a(values):
@@ -101,11 +102,13 @@ def flatten_rollouts(rollouts, gamma):
     # create dictionaries indexed by agent id
     rewards = {n: None for n in range(num_envs)}
     discounted_rewards = {n: None for n in range(num_envs)}
-    log_probs = {n: None for n in range(num_envs)}
+    probs = {n: None for n in range(num_envs)}
+    states = {n: None for n in range(num_envs)}
+    actions = {n: None for n in range(num_envs)}
 
     for n in range(num_envs):
-        rewards[n], log_probs[n] = zip(*rollouts[n])
+        rewards[n], probs[n], states[n], actions[n] = zip(*rollouts[n])
         # discount rewards across each rollout
         discounted_rewards[n] = discount(rewards[n], gamma)
 
-    return flatten_a(rewards), flatten_a(discounted_rewards), flatten_t(log_probs)
+    return flatten_a(rewards), flatten_a(discounted_rewards), flatten_t(probs), flatten_a(states), flatten_a(actions)
