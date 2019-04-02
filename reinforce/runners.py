@@ -1,21 +1,50 @@
 """
 Training and evaluation runners.
-Support multiple parallel environments using OpenAI baselines vectorized environment.
+Supports multiple parallel environments using OpenAI baselines vectorized environment.
 """
 
 import torch
 import numpy as np
-from .functions import create_env, create_envs, create_model, flatten_rollouts, normalize, print_results
+from .functions import create_env, create_envs, create_model, flatten_rollouts, discount, normalize, print_results
 from .agents import Agent, VectorizedAgent
 
 
-def train(env_name, n_episodes=1000, max_t=1000, gamma=0.99, num_envs=4, eps=0.2, eps_decay=0.999, n_updates=4):
-    """Training loop."""
+def train(env_name, n_episodes=1000, max_t=1000, gamma=0.99):
+    """Training loop for a single environment."""
+    env = create_env(env_name, max_t)
+    model = create_model(env)
+    agent = Agent(model)
+
+    returns = []
+    for i_episode in range(1, n_episodes+1):
+        rewards, log_probs = [], []
+        state = env.reset()
+
+        for t in range(1, max_t+1):
+            action, log_prob = agent.act(state)        # select an action
+            state, reward, done, _ = env.step(action)  # take action in environment
+            log_probs.append(log_prob)
+            rewards.append(reward)
+            if done:
+                returns.append(sum(rewards))
+                break
+
+        rewards = normalize(discount(rewards, gamma))  # normalize discounted rewards
+        agent.learn(rewards, log_probs)                # update model weights
+
+        if i_episode % 20 == 0:
+            torch.save(agent.model.state_dict(), 'model.pth')
+            print_results(returns)
+    env.close()
+
+
+def train_multi(env_name, n_episodes=1000, max_t=1000, gamma=0.99, num_envs=4):
+    """Training loop for multiple parallel environments."""
     envs = create_envs(env_name, max_t, num_envs)
     model = create_model(envs)
     agent = VectorizedAgent(model)
 
-    returns, epsilons = [], []
+    returns = []
     for i_episode in range(1, n_episodes+1):
         # sticky done, as done flag from environment does not persist across steps
         episode_done = [False] * num_envs
@@ -25,32 +54,27 @@ def train(env_name, n_episodes=1000, max_t=1000, gamma=0.99, num_envs=4, eps=0.2
 
         # generate rollout for each agent
         for t in range(1, max_t+1):
-            action, prob = agent.act(state)
-            next_state, reward, done, _ = envs.step(action)
+            action, log_prob = agent.act(state)
+            state, reward, done, _ = envs.step(action.detach().numpy())
 
             for n in range(num_envs):
                 if episode_done[n] is False:
-                    rollouts[n].append((reward[n], prob[n], state[n], action[n]))
+                    rollouts[n].append((reward[n], log_prob[n]))
                 if done[n]:
                     episode_done[n] = True
 
-            state = next_state
             if all(episode_done):
                 break
 
-        epsilons.append(eps)
         # flatten rollouts into one dimension
-        rewards, discounted_rewards, probs, states, actions = flatten_rollouts(rollouts, gamma)
+        rewards, discounted_rewards, log_probs = flatten_rollouts(rollouts, gamma)
         # backprop gradient across all rollouts using normalized rewards
-        for _ in range(n_updates):
-            agent.learn(normalize(discounted_rewards), probs, states, actions, eps)
-        eps *= eps_decay
-
+        agent.learn(normalize(discounted_rewards), log_probs)
         # use raw rewards to calcuate return per episode averaged across number of rollouts
         returns.append(np.sum(rewards) / num_envs)
         if i_episode % 20 == 0:
             torch.save(agent.model.state_dict(), 'model.pth')
-            print_results(returns, epsilons)
+            print_results(returns)
     envs.close()
 
 
