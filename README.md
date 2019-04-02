@@ -1,16 +1,20 @@
 ### Introduction
-These implementations of popular deep reinforcement learning algorithms are meant to be as simple as possible.  It should be good for really learning and understanding the essence of the algorithms without getting bogged down in extraneous details or unnecessary abstractions.  Feel free to use it as a working baseline and extend it to suit your needs.
+There are many good deep reinforcement algorithm implementations out there but most use tensorflow.  I much prefer pytorch and the implementations that I could find were all based on PyTorch 0.4.  I wanted something that used modern PyTorch semantics and leveraged the library as much as possible.  So this is what I came up with.
+
+As an overarching goal I am trying to keep things as simple as possible and adhere to the original research papers.  Working through this has been very helpful for me to really understand the algorithms.  Feel free to use it as a working baseline and extend it to suit your needs.  If you find issues please let me know!
 
 
 ### Environments
-All examples use the OpenAI gym CartPole-v0 environment by default because it is a simple one that converges relatively quickly.  It's a good first step when testing any new RL algorithm.  Acrobot-v1 and LunarLander-v2 also work well with the same hyperparameters.
+To keep things simple, only OpenAI gym environments are used.  CartPole-v0 is the default because it converges quickly.  Other environments that have been tested include: Acrobot-v1 and LunarLander-v2.
 
 
 ### Algorithms
 The following algorithms have been implemented:
-- DQN
-- REINFORCE
-- PPO
+- dqn
+- reinforce
+- reinforce_multi (REINFORCE with multiple parallel environments)
+- ppo
+- ppo_multi (PPO with multiple parallel environments)
 
 
 ### Dependencies
@@ -28,11 +32,11 @@ conda install -y pytorch torchvision -c pytorch
 pip install gym box2d-py
 ```
 
-Then just select the algorithm you want to use and start training: `cd dqn; python run.py`
+Then just select the algorithm you want to use and start training: `./run.py ppo`
 
-When training finishes you can evaluate the model: `python run.py --eval`
+When training finishes you can evaluate the model: `./run.py ppo --eval`
 
-You can also run on other environments: `python run.py --env Acrobot-v1`
+You can also run on other environments: `./run.py ppo --env Acrobot-v1`
 
 
 ### Acknowledgements
