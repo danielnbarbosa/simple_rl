@@ -1,11 +1,11 @@
 """
-Auxillary functions.
+Local auxillary functions.
 """
 
 import torch
 import numpy as np
 from .models import TwoLayerMLP
-from common.functions import get_device, create_env, moving_average, discount, normalize, make_env, create_envs
+from common.functions import get_device, moving_average, discount
 
 
 def create_model(env):
@@ -28,20 +28,19 @@ def print_results(returns):
     print(f'episode: {i_episode} return: {i_ret:.2f} avg: {i_avg_ret:.2f} | max_avg: {max_avg_ret:.2f}')
 
 
-def flatten_a(values):
-    """Flatten a dict of arrays."""
-    return np.concatenate([val for val in values.values()])
-
-
-def flatten_t(values):
-    """Flatten a dict of tensors."""
-    for n in range(len(values)):
-        values[n] = torch.stack(values[n], dim=0)
-    return torch.cat([val for val in values.values()])
-
-
 def flatten_rollouts(rollouts, gamma):
     """Return flattened version of rollouts with discounted rewards."""
+
+    def flatten_a(values):
+        """Flatten a dict of arrays."""
+        return np.concatenate([val for val in values.values()])
+
+    def flatten_t(values):
+        """Flatten a dict of tensors."""
+        for n in range(len(values)):
+            values[n] = torch.stack(values[n], dim=0)
+        return torch.cat([val for val in values.values()])
+
     num_envs = len(rollouts)
     # create dictionaries indexed by agent id
     rewards = {n: None for n in range(num_envs)}

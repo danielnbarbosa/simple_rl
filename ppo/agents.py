@@ -7,7 +7,7 @@ import numpy as np
 import torch
 import torch.optim as optim
 from torch.distributions import Categorical
-from .functions import get_device
+from common.functions import get_device
 
 device = get_device()
 

@@ -8,7 +8,7 @@ import torch
 import torch.optim as optim
 import torch.nn.functional as F
 from .memory import ReplayBuffer
-from .functions import get_device
+from common.functions import get_device
 
 
 device = get_device()

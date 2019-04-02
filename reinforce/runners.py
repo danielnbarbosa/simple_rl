@@ -5,7 +5,8 @@ Supports multiple parallel environments using OpenAI baselines vectorized enviro
 
 import torch
 import numpy as np
-from .functions import create_env, create_envs, create_model, flatten_rollouts, discount, normalize, print_results
+from common.functions import create_env, make_env, create_envs, discount, normalize
+from .functions import create_model, flatten_rollouts, print_results
 from .agents import Agent, VectorizedAgent
 
 

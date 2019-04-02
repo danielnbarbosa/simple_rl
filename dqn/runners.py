@@ -5,7 +5,8 @@ Training and evaluation runners.
 from collections import namedtuple
 import torch
 import numpy as np
-from .functions import create_env, create_models, print_results
+from common.functions import create_env
+from .functions import create_models, print_results
 from .agents import Agent
 
 

@@ -1,10 +1,10 @@
 """
-Auxillary functions.
+Local auxillary functions.
 """
 
 import numpy as np
 from .models import TwoLayerMLP
-from common.functions import get_device, create_env, moving_average
+from common.functions import get_device, moving_average
 
 
 def create_models(env):
