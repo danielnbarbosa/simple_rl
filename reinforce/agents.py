@@ -6,7 +6,7 @@ VectorizedAgent: works with multiple parallel environments.
 import torch
 import torch.optim as optim
 from torch.distributions import Categorical
-from functions import get_device
+from .functions import get_device
 
 device = get_device()
 

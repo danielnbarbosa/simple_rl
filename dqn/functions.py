@@ -2,22 +2,9 @@
 Auxillary functions.
 """
 
-import gym
-import torch
 import numpy as np
-from models import TwoLayerMLP
-
-
-def get_device():
-    """Check if GPU is is_available."""
-    return torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-
-def create_env(env_name, max_episode_steps):
-    """Create a single gym environment."""
-    env = gym.make(env_name)
-    env._max_episode_steps = max_episode_steps
-    return env
+from .models import TwoLayerMLP
+from common.functions import get_device, create_env, moving_average
 
 
 def create_models(env):
@@ -28,12 +15,6 @@ def create_models(env):
     q_net = TwoLayerMLP(state_size, action_size).to(device)
     target_net = TwoLayerMLP(state_size, action_size).to(device)
     return (q_net, target_net)
-
-
-def moving_average(values, window=100):
-    """Calculate moving average over window."""
-    weights = np.repeat(1.0, window)/window
-    return np.convolve(values, weights, 'valid')
 
 
 def print_results(results):
