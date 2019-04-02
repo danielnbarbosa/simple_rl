@@ -27,8 +27,7 @@ def train(n_episodes=1000, max_t=1000, gamma=0.99, num_envs=4, eps=0.2, eps_deca
         # generate rollout for each agent
         for t in range(1, max_t+1):
             action, prob = agent.act(state)
-            next_state, reward, done, _ = envs.step(action.detach().numpy())
-            state = next_state
+            next_state, reward, done, _ = envs.step(action)
 
             for n in range(num_envs):
                 if episode_done[n] is False:
@@ -36,6 +35,7 @@ def train(n_episodes=1000, max_t=1000, gamma=0.99, num_envs=4, eps=0.2, eps_deca
                 if done[n]:
                     episode_done[n] = True
 
+            state = next_state
             if all(episode_done):
                 break
 

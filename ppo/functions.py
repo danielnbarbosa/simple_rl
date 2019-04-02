@@ -89,13 +89,6 @@ def flatten_a(values):
     return np.concatenate([val for val in values.values()])
 
 
-def flatten_t(values):
-    """Flatten a dict of tensors."""
-    for n in range(len(values)):
-        values[n] = torch.stack(values[n], dim=0)
-    return torch.cat([val for val in values.values()])
-
-
 def flatten_rollouts(rollouts, gamma):
     """Return flattened version of rollouts with discounted rewards."""
     num_envs = len(rollouts)
@@ -111,4 +104,4 @@ def flatten_rollouts(rollouts, gamma):
         # discount rewards across each rollout
         discounted_rewards[n] = discount(rewards[n], gamma)
 
-    return flatten_a(rewards), flatten_a(discounted_rewards), flatten_t(probs), flatten_a(states), flatten_a(actions)
+    return flatten_a(rewards), flatten_a(discounted_rewards), flatten_a(probs), flatten_a(states), flatten_a(actions)
