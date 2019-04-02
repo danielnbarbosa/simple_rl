@@ -10,7 +10,7 @@ All examples use the OpenAI gym CartPole-v0 environment by default because it is
 The following algorithms have been implemented:
 - DQN
 - REINFORCE
-- REINFORCE multiprocessing
+- PPO
 
 
 ### Dependencies
