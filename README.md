@@ -1,5 +1,5 @@
 ### Introduction
-There are many good deep reinforcement algorithm implementations out there but most use tensorflow.  I much prefer pytorch and the implementations that I could find were all based on PyTorch 0.4.  I wanted something that used modern PyTorch semantics and leveraged the library as much as possible.  So this is what I came up with.
+There are many good deep reinforcement algorithm implementations out there but most use Tensorflow.  For PyTorch all I could find were ones based on PyTorch 0.4.  I wanted something that used modern PyTorch semantics and leveraged the library as much as possible.  So this is what I came up with.
 
 As an overarching goal I am trying to keep things as simple as possible and adhere to the original research papers.  Working through this has been very helpful for me to really understand the algorithms.  Feel free to use it as a working baseline and extend it to suit your needs.  If you find issues please let me know!
 
