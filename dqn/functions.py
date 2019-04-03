@@ -17,7 +17,7 @@ def create_mlp_models(env):
     return (q_net, target_net)
 
 
-def create_cnn_models(frames, action_size):
+def create_cnn_models(action_size, frames=4):
     """Create CNN models."""
     device = get_device()
     q_net = ConvNet(frames, action_size).to(device)

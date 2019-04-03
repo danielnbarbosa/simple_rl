@@ -1,5 +1,5 @@
 """
-Training and evaluation runners.
+Training and evaluation runners for low dimensional state spaces.
 """
 
 from collections import namedtuple
