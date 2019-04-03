@@ -11,21 +11,19 @@ from .multiprocessing_env import SubprocVecEnv
 gym.logger.set_level(40)
 
 
-#########      use GPU      ##########
+#########      GPU      ##########
 def get_device():
     """Check if GPU is is_available."""
     return torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-#########      create single gym environment      ##########
+#########      environments      ##########
 def create_env(env_name, max_episode_steps):
     """Create a single gym environment."""
     env = gym.make(env_name)
     env._max_episode_steps = max_episode_steps
     return env
 
-
-#########      create multiple gym environment      ##########
 def make_env(env_name, max_episode_steps=None):
     """Create a gym environment instance when using vectorized environments."""
     def _thunk():
@@ -43,7 +41,7 @@ def create_envs(env_name, max_episode_steps, num_envs):
     return envs
 
 
-#########      process rewards     ##########
+#########      rewards     ##########
 def discount(rewards, gamma):
     """Calulate discounted future rewards."""
     discounted_rewards = np.zeros_like(rewards)
@@ -61,29 +59,54 @@ def normalize(rewards):
     return (rewards - mean) / (std)
 
 
-#########      display results      ##########
+#########      results      ##########
 def moving_average(values, window=100):
     """Calculate moving average over window."""
     weights = np.repeat(1.0, window)/window
     return np.convolve(values, weights, 'valid')
 
 
-#########      atari processing      ##########
-def preprocess_frames(frames):
+#########      atari       ##########
+def preprocess_frame(frame):
     """
-    Pre-process Atari game frames.
-    Stack multiple frames into an array.
+    Pre-process a single Atari game frame.
     """
-    processed_frames = []
-    for frame in frames:
-        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY) # convert to gray scale
-        frame = cv2.resize(frame, (84, 84))             # squish
-        frame = frame / 255                             # normalize
-        #plt.imshow(frame, cmap='gray')
-        #plt.show()
-        #print(frame)
-        processed_frames.append(frame)
-    return np.expand_dims(np.asarray(processed_frames), 0)
+    frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY) # convert to gray scale
+    frame = cv2.resize(frame, (84, 84))             # squish
+    frame = frame / 255                             # normalize
+    return frame
+
+def env_reset_with_frames(env, n_frames):
+    """Reset environment and generate multiple noop frames."""
+    frames = []
+    frame = env.reset()
+    frame = preprocess_frame(frame)
+    frames.append(frame)
+    # 0 is NOOP so the agent doesn't get to move during these frames
+    for i in range(n_frames-1):
+        frame, _, _, _ = env.step(0)
+        frame = preprocess_frame(frame)
+        frames.append(frame)
+    state = np.expand_dims(np.asarray(frames), 0)
+    return state
+
+def env_step_with_frames(env, action, n_frames):
+    """Step the environment and generate multiple noop frames."""
+    frames, rewards, dones = [], [], []
+    frame, reward, done, _ = env.step(action)                 # take action in environment
+    frame = preprocess_frame(frame)
+    frames.append(frame)
+    rewards.append(reward)
+    dones.append(done)
+    # 0 is NOOP so the agent doesn't get to move during these frames
+    for i in range(n_frames-1):
+        frame, reward, done, _ = env.step(0)
+        frame = preprocess_frame(frame)
+        frames.append(frame)
+    state = np.expand_dims(np.asarray(frames), 0)
+    reward = sum(rewards)
+    done = any(dones)
+    return state, reward, done
 
 def remap_action(action, action_map):
     """

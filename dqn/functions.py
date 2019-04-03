@@ -7,8 +7,8 @@ from .models import TwoLayerMLP, ConvNet
 from common.functions import get_device, moving_average
 
 
-def create_models(env):
-    """Create models based on an environment."""
+def create_mlp_models(env):
+    """Create MLP models based on environment."""
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n
     device = get_device()
@@ -17,12 +17,8 @@ def create_models(env):
     return (q_net, target_net)
 
 
-def create_atari_models(env, frames=None, action_size=None):
-    """Create models based on an environment."""
-    if not frames:
-        frames = 4
-    if not action_size:
-        action_size = env.action_space.n
+def create_cnn_models(frames, action_size):
+    """Create CNN models."""
     device = get_device()
     q_net = ConvNet(frames, action_size).to(device)
     target_net = ConvNet(frames, action_size).to(device)

@@ -12,25 +12,25 @@ args = parser.parse_args()
 print(f'Running {args.env} with {args.algo}.')
 if args.algo == 'dqn':
     if args.env == 'PongDeterministic-v4':
-        from dqn.runners import train_atari as train_runner
-        from dqn.runners import evaluate_atari as evaluate
+        from dqn.runners_atari import train
+        from dqn.runners_atari import evaluate
     else:
-        from dqn.runners import train as train_runner
-        from dqn.runners import evaluate
+        from dqn.runners_lowdim import train
+        from dqn.runners_lowdim import evaluate
 elif args.algo == 'reinforce':
-    from reinforce.runners import train as train_runner
+    from reinforce.runners import train
     from reinforce.runners import evaluate
 elif args.algo == 'reinforce_multi':
-    from reinforce.runners import train_multi as train_runner
+    from reinforce.runners import train_multi as train
     from reinforce.runners import evaluate
 elif args.algo == 'ppo':
-    from ppo.runners import train as train_runner
+    from ppo.runners import train
     from ppo.runners import evaluate
 elif args.algo == 'ppo_multi':
-    from ppo.runners import train_multi as train_runner
+    from ppo.runners import train_multi as train
     from ppo.runners import evaluate
 
 if args.eval:
     evaluate(args.env)
 else:
-    train_runner(args.env)
+    train(args.env)
