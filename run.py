@@ -1,7 +1,7 @@
 #!/anaconda3/envs/simple_rl/bin/python
 
 import argparse
-from common.functions import is_atari
+from common.atari import is_atari
 
 parser = argparse.ArgumentParser()
 parser.add_argument('algo', type=str, choices=['dqn', 'reinforce', 'reinforce_multi', 'ppo', 'ppo_multi'], help='algorithm')

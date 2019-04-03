@@ -6,7 +6,8 @@ import time
 from collections import namedtuple
 import torch
 import numpy as np
-from common.functions import create_env, remap_action, env_reset_frames, env_step_frames
+from common.functions import create_env
+from common.atari import remap_action, env_reset_frames, env_step_frames
 from .functions import create_cnn_models, print_results
 from .agents import Agent
 
