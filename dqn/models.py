@@ -45,4 +45,5 @@ class ConvNet(nn.Module):
             nn.Linear(512, outputs)
         )
     def forward(self, x):
+        x = x.float() / 255         # normalize input
         return self.layers(x)

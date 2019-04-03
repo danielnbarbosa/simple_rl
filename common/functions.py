@@ -86,7 +86,6 @@ def preprocess_frame(frame):
     """
     frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY) # convert to gray scale
     frame = cv2.resize(frame, (84, 84))             # squish
-    frame = frame / 255                             # normalize
     return frame
 
 def env_reset_with_frames(env, n_frames):
@@ -101,7 +100,8 @@ def env_reset_with_frames(env, n_frames):
         frame = preprocess_frame(frame)
         frames.append(frame)
     # expand first dimension to represent batch size of 1
-    state = np.expand_dims(np.asarray(frames), 0)
+    # convert to uint8 to save memory
+    state = np.expand_dims(np.asarray(frames, dtype=np.uint8), 0)
     return state
 
 def env_step_with_frames(env, action, n_frames):
@@ -124,7 +124,8 @@ def env_step_with_frames(env, action, n_frames):
         rewards.append(reward)
         dones.append(done)
     # expand first dimension to represent batch size of 1
-    state = np.expand_dims(np.asarray(frames), 0)
+    # convert to uint8 to save memory
+    state = np.expand_dims(np.asarray(frames, dtype=np.uint8), 0)
     reward = sum(rewards)
     done = any(dones)
     return state, reward, done
