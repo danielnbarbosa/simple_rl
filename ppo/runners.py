@@ -3,20 +3,22 @@ Training and evaluation runners.
 Supports multiple parallel environments using OpenAI baselines vectorized environment.
 """
 
+from collections import namedtuple
 import torch
 import numpy as np
-from common.functions import create_env, make_env, create_envs, discount, normalize
-from .functions import create_model, flatten_rollouts, print_results
+from common.functions import create_env, create_envs, discount, normalize
+from .functions import create_mlp, flatten_rollouts, print_results
 from .agents import Agent, VectorizedAgent
 
 
 def train(env_name, n_episodes=1000, max_t=1000, gamma=0.99, eps=0.2, eps_decay=0.999, n_updates=4):
     """Training loop for a single environment."""
     env = create_env(env_name, max_t)
-    model = create_model(env)
+    model = create_mlp(env)
     agent = Agent(model)
 
-    returns, epsilons = [], []
+    result = namedtuple("Result", field_names=['episode_return', 'epslions', 'steps'])
+    results = []
     for i_episode in range(1, n_episodes+1):
         rewards, probs, states, actions = [], [], [], []
         state = env.reset()
@@ -30,8 +32,8 @@ def train(env_name, n_episodes=1000, max_t=1000, gamma=0.99, eps=0.2, eps_decay=
             actions.append(action)
             state = next_state
             if done:
-                returns.append(sum(rewards))
-                epsilons.append(eps)
+                r = result(sum(rewards), eps, t)
+                results.append(r)
                 break
         # after episode is over
         rewards = normalize(discount(rewards, gamma))  # normalize discounted rewards
@@ -41,17 +43,18 @@ def train(env_name, n_episodes=1000, max_t=1000, gamma=0.99, eps=0.2, eps_decay=
 
         if i_episode % 20 == 0:
             torch.save(agent.model.state_dict(), 'model.pth')
-            print_results(returns, epsilons)
+            print_results(results)
     env.close()
 
 
 def train_multi(env_name, n_episodes=1000, max_t=1000, gamma=0.99, num_envs=4, eps=0.2, eps_decay=0.999, n_updates=4):
     """Training loop for multiple parallel environments."""
     envs = create_envs(env_name, max_t, num_envs)
-    model = create_model(envs)
+    model = create_mlp(envs)
     agent = VectorizedAgent(model)
 
-    returns, epsilons = [], []
+    result = namedtuple("Result", field_names=['episode_return', 'epslions', 'steps'])
+    results = []
     for i_episode in range(1, n_episodes+1):
         # sticky done, as done flag from environment does not persist across steps
         episode_done = [False] * num_envs
@@ -74,7 +77,6 @@ def train_multi(env_name, n_episodes=1000, max_t=1000, gamma=0.99, num_envs=4, e
             if all(episode_done):
                 break
 
-        epsilons.append(eps)
         # flatten rollouts into one dimension
         rewards, discounted_rewards, probs, states, actions = flatten_rollouts(rollouts, gamma)
         # backprop gradient across all rollouts using normalized rewards
@@ -83,21 +85,23 @@ def train_multi(env_name, n_episodes=1000, max_t=1000, gamma=0.99, num_envs=4, e
         eps *= eps_decay
 
         # use raw rewards to calcuate return per episode averaged across number of rollouts
-        returns.append(np.sum(rewards) / num_envs)
+        r = result(np.sum(rewards)/num_envs, eps, t/num_envs)
+        results.append(r)
         if i_episode % 20 == 0:
             torch.save(agent.model.state_dict(), 'model.pth')
-            print_results(returns, epsilons)
+            print_results(results)
     envs.close()
 
 
 def evaluate(env_name, n_episodes=10, max_t=1000, render=True):
     """Evaluation loop."""
     env = create_env(env_name, max_t)
-    model = create_model(env)
+    model = create_mlp(env)
     model.load_state_dict(torch.load('model.pth'))
     agent = Agent(model)
 
-    returns = []
+    result = namedtuple("Result", field_names=['episode_return', 'epslions', 'steps'])
+    results = []
     for i_episode in range(1, n_episodes+1):
         rewards = []
         state = env.reset()
@@ -109,8 +113,9 @@ def evaluate(env_name, n_episodes=10, max_t=1000, render=True):
             state, reward, done, _ = env.step(action)       # take action in environment
             rewards.append(reward)
             if done:
-                returns.append(sum(rewards))
+                r = result(sum(rewards), 0, t)
+                results.append(r)
                 break
 
-        print_results(returns)
+        print_results(results)
     env.close()

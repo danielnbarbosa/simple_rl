@@ -1,5 +1,5 @@
 """
-Models.
+As models are predicting Q-values, they don't use activation functions.
 """
 
 import torch.nn as nn

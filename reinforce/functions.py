@@ -4,28 +4,28 @@ Local auxillary functions.
 
 import torch
 import numpy as np
-from .models import TwoLayerMLP
 from common.functions import get_device, moving_average, discount
+from .models import MLP
 
 
-def create_model(env):
-    """Create a model based on an environment."""
+def create_mlp(env):
+    """Create MLP model based on an environment."""
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n
     device = get_device()
-    model = TwoLayerMLP(state_size, action_size).to(device)
-    return model
+    return MLP(state_size, action_size).to(device)
 
 
-def print_results(returns):
+def print_results(results):
     """Print results."""
-    smoothed_returns = moving_average(returns)
-    i_episode = len(returns)
-    i_ret = returns[-1]
-    i_avg_ret = smoothed_returns[-1]
-    max_avg_ret = np.max(smoothed_returns)
+    returns, steps = zip(*results)
     # need to gather at least window results before moving average is accurate
-    print(f'episode: {i_episode} return: {i_ret:.2f} avg: {i_avg_ret:.2f} | max_avg: {max_avg_ret:.2f}')
+    smoothed_returns = moving_average(returns)
+    print(f'episode: {len(returns)}',          # specific to this episode
+          f'return: {returns[-1]:.2f} |',
+          f'avg: {smoothed_returns[-1]:.2f}',  # cummulative
+          f'max_avg: {np.max(smoothed_returns):.2f}',
+          f'cum_steps: {np.sum(steps)}')
 
 
 def flatten_rollouts(rollouts, gamma):

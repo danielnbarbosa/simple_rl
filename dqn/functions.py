@@ -30,10 +30,10 @@ def print_results(results):
     returns, epsilons, buffer_lens, steps = zip(*results)
     # need to gather at least window results before moving average is accurate
     smoothed_returns = moving_average(returns)
-    print(f'episode: {len(returns)}',             # specific to this episode
+    print(f'episode: {len(returns)}',          # specific to this episode
           f'return: {returns[-1]:.2f}',
           f'eps: {epsilons[-1]:.2f}',
           f'buff: {buffer_lens[-1]} |',
-          f'avg: {smoothed_returns[-1]:.2f}',     # cummulative
+          f'avg: {smoothed_returns[-1]:.2f}',  # cummulative
           f'max_avg: {np.max(smoothed_returns):.2f}',
           f'cum_steps: {np.sum(steps)}')
