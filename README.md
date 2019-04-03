@@ -28,8 +28,8 @@ First create a virtual environment with all the dependencies installed:
 ```
 conda create -y -n simple_rl python=3.6 anaconda
 conda activate simple_rl
-conda install -y pytorch torchvision -c pytorch
-pip install gym box2d-py
+conda install -y pytorch torchvision opencv -c pytorch
+pip install gym gym[atari] box2d-py
 ```
 
 Then just select the algorithm you want to use and start training: `./run.py ppo`

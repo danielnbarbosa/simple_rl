@@ -11,8 +11,12 @@ args = parser.parse_args()
 
 print(f'Running {args.env} with {args.algo}.')
 if args.algo == 'dqn':
-    from dqn.runners import train as train_runner
-    from dqn.runners import evaluate
+    if args.env == 'PongDeterministic-v4':
+        from dqn.runners import train_atari as train_runner
+        from dqn.runners import evaluate_atari as evaluate
+    else:
+        from dqn.runners import train as train_runner
+        from dqn.runners import evaluate
 elif args.algo == 'reinforce':
     from reinforce.runners import train as train_runner
     from reinforce.runners import evaluate

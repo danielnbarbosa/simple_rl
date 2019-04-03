@@ -3,7 +3,7 @@ Local auxillary functions.
 """
 
 import numpy as np
-from .models import TwoLayerMLP
+from .models import TwoLayerMLP, ConvNet
 from common.functions import get_device, moving_average
 
 
@@ -14,6 +14,18 @@ def create_models(env):
     device = get_device()
     q_net = TwoLayerMLP(state_size, action_size).to(device)
     target_net = TwoLayerMLP(state_size, action_size).to(device)
+    return (q_net, target_net)
+
+
+def create_atari_models(env, frames=None, action_size=None):
+    """Create models based on an environment."""
+    if not frames:
+        frames = 4
+    if not action_size:
+        action_size = env.action_space.n
+    device = get_device()
+    q_net = ConvNet(frames, action_size).to(device)
+    target_net = ConvNet(frames, action_size).to(device)
     return (q_net, target_net)
 
 

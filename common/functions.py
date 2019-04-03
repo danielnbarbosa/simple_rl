@@ -5,6 +5,8 @@ Shared auxillary functions.
 import gym
 import torch
 import numpy as np
+import matplotlib.pyplot as plt
+import cv2
 from .multiprocessing_env import SubprocVecEnv
 gym.logger.set_level(40)
 
@@ -64,3 +66,28 @@ def moving_average(values, window=100):
     """Calculate moving average over window."""
     weights = np.repeat(1.0, window)/window
     return np.convolve(values, weights, 'valid')
+
+
+#########      atari processing      ##########
+def preprocess_frames(frames):
+    """
+    Pre-process Atari game frames.
+    Stack multiple frames into an array.
+    """
+    processed_frames = []
+    for frame in frames:
+        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY) # convert to gray scale
+        frame = cv2.resize(frame, (84, 84))             # squish
+        frame = frame / 255                             # normalize
+        #plt.imshow(frame, cmap='gray')
+        #plt.show()
+        #print(frame)
+        processed_frames.append(frame)
+    return np.expand_dims(np.asarray(processed_frames), 0)
+
+def remap_action(action, action_map):
+    """
+    Typically only need to use a subset of the available actions in an environment.
+    This defines the mapping that convert actions from a model to desired actions in the environment.
+    """
+    return action_map[action]

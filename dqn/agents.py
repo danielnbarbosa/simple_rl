@@ -35,7 +35,8 @@ class Agent():
 
     def act(self, state, eps=0.):
         """Given a state, determine the next action."""
-        state = torch.from_numpy(state).float().unsqueeze(0).to(device)
+        #state = torch.from_numpy(state).float().unsqueeze(0).to(device)
+        state = torch.from_numpy(state).float().to(device)
         # calculate action values
         self.q_net.eval()
         with torch.no_grad():
