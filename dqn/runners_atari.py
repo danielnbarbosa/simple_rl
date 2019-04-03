@@ -2,6 +2,7 @@
 Training and evaluation runners.
 """
 
+import time
 from collections import namedtuple
 import torch
 import numpy as np
@@ -46,7 +47,7 @@ def train(env_name, n_episodes=10000, max_t=350, gamma=0.99, eps_start=1.0, eps_
     env.close()
 
 
-def evaluate(env_name, n_episodes=10, max_t=1000, eps=0.05, render=True):
+def evaluate(env_name, n_episodes=10, max_t=5000, eps=0.05, render=True):
     """Evaluation loop."""
     env = create_env(env_name, max_t)
     q_net, target_net = create_cnn_models(frames=4, action_size=2)
@@ -61,6 +62,7 @@ def evaluate(env_name, n_episodes=10, max_t=1000, eps=0.05, render=True):
 
         for t in range(1, max_t+1):
             if render:
+                time.sleep(.05)
                 env.render()
             action = agent.act(state, eps)              # select an action
             env_action = remap_action(action, {0: 4, 1: 5})

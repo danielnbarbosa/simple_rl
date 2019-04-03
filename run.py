@@ -1,7 +1,7 @@
 #!/anaconda3/envs/simple_rl/bin/python
 
 import argparse
-
+from common.functions import is_atari
 
 parser = argparse.ArgumentParser()
 parser.add_argument('algo', type=str, choices=['dqn', 'reinforce', 'reinforce_multi', 'ppo', 'ppo_multi'], help='algorithm')
@@ -11,7 +11,7 @@ args = parser.parse_args()
 
 print(f'Running {args.env} with {args.algo}.')
 if args.algo == 'dqn':
-    if args.env == 'PongDeterministic-v4':
+    if is_atari(args.env):
         from dqn.runners_atari import train
         from dqn.runners_atari import evaluate
     else:
