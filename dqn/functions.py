@@ -27,13 +27,13 @@ def create_cnn_models(frames, action_size):
 
 def print_results(results):
     """Print results."""
-    returns, epsilons, buffer_lens = zip(*results)
+    returns, epsilons, buffer_lens, steps = zip(*results)
     smoothed_returns = moving_average(returns)
-    i_episode = len(returns)
-    i_ret = returns[-1]
-    i_eps = epsilons[-1]
-    i_buffer_len = buffer_lens[-1]
-    i_avg_ret = smoothed_returns[-1]
-    max_avg_ret = np.max(smoothed_returns)
     # need to gather at least window results before moving average is accurate
-    print(f'episode: {i_episode} return: {i_ret:.2f} eps: {i_eps:.2f} buff: {i_buffer_len} avg: {i_avg_ret:.2f} | max_avg: {max_avg_ret:.2f}')
+    print(f'episode: {len(returns)}',             # specific to this episode
+          f'return: {returns[-1]:.2f}',
+          f'eps: {epsilons[-1]:.2f}',
+          f'buff: {buffer_lens[-1]} |',
+          f'avg: {smoothed_returns[-1]:.2f}',     # cummulative
+          f'max_avg: {np.max(smoothed_returns):.2f}',
+          f'cum_steps: {np.sum(steps)}')

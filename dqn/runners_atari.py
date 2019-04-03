@@ -18,7 +18,7 @@ def train(env_name, n_episodes=10000, max_t=350, gamma=0.99, eps_start=1.0, eps_
     models = create_cnn_models(frames=4, action_size=2)
     agent = Agent(models)
 
-    result = namedtuple("Result", field_names=["episode_return", "epsilon", "buffer_len"])
+    result = namedtuple("Result", field_names=['episode_return', 'epsilon', 'buffer_len', 'steps'])
     results = []
     eps = eps_start
 
@@ -35,7 +35,7 @@ def train(env_name, n_episodes=10000, max_t=350, gamma=0.99, eps_start=1.0, eps_
             state = next_state
             episode_return += reward
             if done:
-                r = result(episode_return, eps, len(agent.memory))
+                r = result(episode_return, eps, len(agent.memory), t)
                 results.append(r)
                 break
 
@@ -54,7 +54,7 @@ def evaluate(env_name, n_episodes=10, max_t=5000, eps=0.05, render=True):
     q_net.load_state_dict(torch.load('model.pth'))
     agent = Agent((q_net, target_net))
 
-    result = namedtuple("Result", field_names=["episode_return", "epsilon", "buffer_len"])
+    result = namedtuple("Result", field_names=['episode_return', 'epsilon', 'buffer_len', 'steps'])
     results = []
     for i_episode in range(1, n_episodes+1):
         episode_return = 0
@@ -69,7 +69,7 @@ def evaluate(env_name, n_episodes=10, max_t=5000, eps=0.05, render=True):
             state, reward, done = env_step_with_frames(env, env_action, 4) # take action in environment
             episode_return += reward
             if done:
-                r = result(episode_return, eps, 0)
+                r = result(episode_return, eps, 0, t)
                 results.append(r)
                 break
 
