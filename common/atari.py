@@ -68,11 +68,3 @@ def env_step_frames(env, action, n_frames=4):
     reward = sum(rewards)
     done = any(dones)
     return state, reward, done
-
-
-def remap_action(action, action_map):
-    """
-    Typically only need to use a subset of the available actions in an environment.
-    This maps actions from a model to desired actions in the environment.
-    """
-    return action_map[action]
