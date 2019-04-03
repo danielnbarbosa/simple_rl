@@ -35,8 +35,11 @@ class Agent():
 
     def act(self, state, eps=0.):
         """Given a state, determine the next action."""
-        #state = torch.from_numpy(state).float().unsqueeze(0).to(device)
+        # convert ndarray to tensor
         state = torch.from_numpy(state).float().to(device)
+        # if state is 1D then expand dim0 for batch size of 1
+        if state.dim() == 1:
+            state = state.unsqueeze(0)
         # calculate action values
         self.q_net.eval()
         with torch.no_grad():
