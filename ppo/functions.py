@@ -31,9 +31,9 @@ def print_results(results):
 def flatten_rollouts(rollouts, gamma):
     """Return flattened version of rollouts with discounted rewards."""
 
-    def flatten_a(values):
-        """Flatten a dict of arrays."""
-        return np.concatenate([val for val in values.values()])
+    def flatten_a(dict_of_arrays):
+        """Flatten dict of arrays."""
+        return np.concatenate([val for val in dict_of_arrays.values()]).tolist()
 
     num_envs = len(rollouts)
     # create dictionaries indexed by agent id

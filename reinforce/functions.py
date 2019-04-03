@@ -2,7 +2,8 @@
 Local auxillary functions.
 """
 
-import torch
+import operator
+from functools import reduce
 import numpy as np
 from common.functions import get_device, moving_average, discount
 from .models import MLP
@@ -31,15 +32,15 @@ def print_results(results):
 def flatten_rollouts(rollouts, gamma):
     """Return flattened version of rollouts with discounted rewards."""
 
-    def flatten_a(values):
-        """Flatten a dict of arrays."""
-        return np.concatenate([val for val in values.values()])
+    def flatten_a(dict_of_arrays):
+        """Flatten dict of arrays."""
+        return np.concatenate([val for val in dict_of_arrays.values()]).tolist()
 
-    def flatten_t(values):
-        """Flatten a dict of tensors."""
-        for n in range(len(values)):
-            values[n] = torch.stack(values[n], dim=0)
-        return torch.cat([val for val in values.values()])
+    def flatten_t(dict_of_tuples):
+        """Flatten dict of tuples."""
+        unraveled_dict = [val for val in dict_of_tuples.values()]
+        flattened_list = reduce(operator.concat, unraveled_dict)
+        return flattened_list
 
     num_envs = len(rollouts)
     # create dictionaries indexed by agent id
@@ -51,5 +52,4 @@ def flatten_rollouts(rollouts, gamma):
         rewards[n], log_probs[n] = zip(*rollouts[n])
         # discount rewards across each rollout
         discounted_rewards[n] = discount(rewards[n], gamma)
-
     return flatten_a(rewards), flatten_a(discounted_rewards), flatten_t(log_probs)

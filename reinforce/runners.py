@@ -8,7 +8,7 @@ import torch
 import numpy as np
 from common.functions import create_env, create_envs, discount, normalize
 from .functions import create_mlp, flatten_rollouts, print_results
-from .agents import Agent, VectorizedAgent
+from .agents import Agent
 
 
 def train(env_name,
@@ -55,7 +55,7 @@ def train_multi(env_name,
     """Training loop for multiple parallel environments."""
     envs = create_envs(env_name, max_t, num_envs)
     model = create_mlp(envs)
-    agent = VectorizedAgent(model)
+    agent = Agent(model)
     result = namedtuple("Result", field_names=['episode_return', 'steps'])
     results = []
 
@@ -67,11 +67,12 @@ def train_multi(env_name,
         # generate rollouts for parallel agents
         for t in range(1, max_t+1):
             action, log_prob = agent.act(state)
-            state, reward, done, _ = envs.step(action.detach().numpy())
+            state, reward, done, _ = envs.step(action)
             # separate results by agent
             for n in range(num_envs):
                 if episode_done[n] is False:
-                    rollouts[n].append((reward[n], log_prob[n]))
+                    # need to expand 0dim because it gets eaten by dict
+                    rollouts[n].append((reward[n], log_prob[n].unsqueeze(0)))
                 if done[n]:
                     episode_done[n] = True
             if all(episode_done):

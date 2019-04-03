@@ -8,7 +8,7 @@ import torch
 import numpy as np
 from common.functions import create_env, create_envs, discount, normalize
 from .functions import create_mlp, flatten_rollouts, print_results
-from .agents import Agent, VectorizedAgent
+from .agents import Agent
 
 
 def train(env_name,
@@ -28,7 +28,7 @@ def train(env_name,
     for i_episode in range(1, n_episodes+1):
         rewards, probs, states, actions = [], [], [], []
         state = env.reset()
-    
+
         # generate rollout
         for t in range(1, max_t+1):
             action, prob = agent.act(state)        # select an action
@@ -36,7 +36,7 @@ def train(env_name,
             probs.append(prob)
             rewards.append(reward)
             states.append(state)
-            actions.append(action)
+            actions.append(action.item())  # learn expects scalars, can't build tensor with 0dim arrays
             state = next_state
             if done:
                 break
@@ -67,7 +67,7 @@ def train_multi(env_name,
     """Training loop for multiple parallel environments."""
     envs = create_envs(env_name, max_t, num_envs)
     model = create_mlp(envs)
-    agent = VectorizedAgent(model)
+    agent = Agent(model)
     result = namedtuple("Result", field_names=['episode_return', 'epslions', 'steps'])
     results = []
 
