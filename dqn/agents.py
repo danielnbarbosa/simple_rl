@@ -7,8 +7,8 @@ import numpy as np
 import torch
 import torch.optim as optim
 import torch.nn.functional as F
-from .memory import ReplayBuffer
 from common.functions import get_device
+from .memory import ReplayBuffer
 
 
 device = get_device()
