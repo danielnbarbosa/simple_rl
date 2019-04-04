@@ -12,7 +12,11 @@ class Flatten(nn.Module):
 
 
 class MLP(nn.Module):
-    """Multi layer perceptron with two hidden layers."""
+    """
+    Multi layer perceptron with two hidden layers.
+    Input shape: [batch_size, inputs].
+    Output shape: [batch_size, outputs].
+    """
     def __init__(self, inputs, outputs):
         super(MLP, self).__init__()
         fc1, fc2 = (128, 128)
@@ -28,10 +32,13 @@ class MLP(nn.Module):
 
 
 class CNN(nn.Module):
-    """Convolutional Neural Network used in DQN paper."""
+    """
+    Convolutional Neural Network used in DQN paper.
+    Input shape: [batch_size, frames, 84, 84].
+    Output shape: [batch_size, outputs].
+    """
     def __init__(self, frames, outputs):
         super(CNN, self).__init__()
-        #input                                                   [-1, frames, 84, 84]
         self.layers = nn.Sequential(
             nn.Conv2d(frames, 32, kernel_size=8, stride=4),     #[-1, 32, 20, 20]
             nn.ReLU(),

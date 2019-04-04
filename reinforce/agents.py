@@ -20,16 +20,16 @@ class Agent():
         """Given a state, determine the next action."""
         # convert ndarray to tensor
         state = torch.from_numpy(state).float().to(device)
-        # if state is 1D then expand dim0 for batch size of 1
+        # if state is 1D then expand dim 0 for batch size of 1
         if state.dim() == 1:
             state = state.unsqueeze(0)
         # calculate action probabilities
-        probs = self.model.forward(state).cpu()
+        probs = self.model.forward(state).cpu() # dim = 2
         # select an action by sampling from probability distribution
         m = Categorical(probs)
-        action = m.sample()
-        # need to squeeze because env expects scalar (for single environment)
-        return action.detach().numpy().squeeze(), m.log_prob(action)
+        action = m.sample()  # dim = 1
+        # need to squeeze because env expects scalar for single environment and 1D array for parallel environments
+        return action.detach().squeeze().numpy(), m.log_prob(action)
 
     def learn(self, rewards, log_probs):
         """Update model weights."""

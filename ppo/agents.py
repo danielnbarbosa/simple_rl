@@ -21,7 +21,7 @@ class Agent():
         """Given a state, determine the next action by sampling from the action probabilities."""
         # convert ndarray to tensor
         state = torch.from_numpy(state).float().to(device)
-        # if state is 1D then expand dim0 for batch size of 1
+        # if state is 1D then expand dim 0 for batch size of 1
         if state.dim() == 1:
             state = state.unsqueeze(0)
         # calculate action probabilities
@@ -29,7 +29,7 @@ class Agent():
         # select an action by sampling from probability distribution
         m = Categorical(probs)
         action = m.sample()
-        # need to squeeze because env expects scalar (for single environment)
+        # need to squeeze because env expects scalar for single environment and 1D array for parallel environments
         return action.detach().numpy().squeeze(), probs.gather(1, action.unsqueeze(1)).numpy()
 
     def learn(self, rewards, probs, states, actions, eps):

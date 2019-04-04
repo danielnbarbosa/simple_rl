@@ -6,7 +6,11 @@ import torch.nn as nn
 
 
 class MLP(nn.Module):
-    """Multi layer perceptron with two hidden layers."""
+    """
+    Multi layer perceptron with two hidden layers.
+    Input shape: [batch_size, inputs].
+    Output shape: [batch_size, outputs].
+    """
     def __init__(self, inputs, outputs):
         super(MLP, self).__init__()
         fc1, fc2 = (16, 16)

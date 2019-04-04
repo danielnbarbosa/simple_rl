@@ -71,7 +71,7 @@ def train_multi(env_name,
             # separate results by agent
             for n in range(num_envs):
                 if episode_done[n] is False:
-                    # need to expand 0dim because it gets eaten by dict
+                    # unsqueeze(0) to bring back dimension lost by retrieving from dict
                     rollouts[n].append((reward[n], log_prob[n].unsqueeze(0)))
                 if done[n]:
                     episode_done[n] = True

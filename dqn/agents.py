@@ -37,7 +37,7 @@ class Agent():
         """Given a state, determine the next action."""
         # convert ndarray to tensor
         state = torch.from_numpy(state).float().to(device)
-        # if state is 1D then expand dim0 for batch size of 1
+        # if state is 1D then expand dim 0 for batch size of 1
         if state.dim() == 1:
             state = state.unsqueeze(0)
         # calculate action values
@@ -47,7 +47,7 @@ class Agent():
         self.q_net.train()
 
         # epsilon-greedy action selection
-        action_size = len(action_values.squeeze())
+        action_size = action_values.size()[1]
         if random.random() > eps:
             return np.argmax(action_values.cpu().data.numpy())
         else:
@@ -75,6 +75,8 @@ class Agent():
         # get q values for chosen actions
         q_expected = self.q_net(states).gather(1, actions)
         # get max q values for next_states using the fixed network
+        # max() returns a tuple (max value, argmax), we only want the first part
+        # unsqueeze(1) to bring back dimension lost by max() operation
         q_targets_next = self.target_net(next_states).detach().max(1)[0].unsqueeze(1)
         # calculate q values for current states
         q_targets = rewards + (gamma * q_targets_next * (1 - dones))
