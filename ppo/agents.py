@@ -27,19 +27,21 @@ class Agent():
         # calculate action probabilities
         probs = self.model.forward(state).cpu().detach()
         # select an action by sampling from probability distribution
-        m = Categorical(probs)
-        action = m.sample()
-        # need to squeeze because env expects scalar for single environment and 1D array for parallel environments
+        m = Categorical(probs)  # dim = 2
+        action = m.sample()     # dim = 1
+        # need to squeeze() because env expects scalar for single environment and 1D array for parallel environments
+        # need to unsqueeze() because index tensor for gather must have same dimensions as input
         return action.detach().numpy().squeeze(), probs.gather(1, action.unsqueeze(1)).numpy()
 
     def learn(self, rewards, probs, states, actions, eps):
         """Update model weights."""
         # convert everything to tensors
         rewards = torch.tensor(rewards, dtype=torch.float, device=device)
+        # need to squeeze() because probs comes as list of 2D arrays, which would turn into 3D tensor
         probs = torch.tensor(probs, dtype=torch.float, device=device).squeeze()
         actions = torch.tensor(actions, dtype=torch.int64, device=device)
         # get new probabilities for actions using current policy
-        new_probs = self._calc_probs(states, actions)
+        new_probs = self._calc_new_probs(states, actions)
         # ratio for clipping
         ratio = new_probs/probs
         # clipped function
@@ -51,13 +53,16 @@ class Agent():
         loss.backward()
         self.optimizer.step()
 
-    def _calc_probs(self, states, actions):
+    def _calc_new_probs(self, states, actions):
         """
-        Given states and actions, run states through the model.
-        Return new probabilities for the action.
+        Takes states and actions from an old rollout.
+        Runs states through the model and returns new probabilities for the action.
+        In this case we will use the gradients during backprop so we don't want to detach as in act().
         """
         states = np.asarray(states)
         states = torch.from_numpy(states).float().to(device)
-        probs = self.model.forward(states)
-        actions = actions.unsqueeze(1)
+        probs = self.model.forward(states)  # dim = 2
+        # need to unsqueeze() because index tensor for gather must have same dimensions as input
+        actions = actions.unsqueeze(1)   # dim = 2 (after unsqueeze())
+        # need to squeeze() so dimensions line up with old probs
         return probs.gather(1, actions).squeeze(1)

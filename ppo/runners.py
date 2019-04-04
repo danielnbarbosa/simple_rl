@@ -36,7 +36,7 @@ def train(env_name,
             probs.append(prob)
             rewards.append(reward)
             states.append(state)
-            actions.append(action.item())  # learn expects scalars, can't build tensor with 0dim arrays
+            actions.append(action.item())  # learn expects scalars, can't build tensor with 0 dim arrays
             state = next_state
             if done:
                 break
