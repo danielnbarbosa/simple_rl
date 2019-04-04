@@ -60,5 +60,7 @@ def normalize(rewards):
 #########      results      ##########
 def moving_average(values, window=100):
     """Calculate moving average over window."""
+    if len(values) < window:
+        window = len(values)
     weights = np.repeat(1.0, window)/window
     return np.convolve(values, weights, 'valid')
