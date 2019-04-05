@@ -2,6 +2,8 @@
 Shared auxillary functions.
 """
 
+import operator
+from functools import reduce
 import gym
 import torch
 import numpy as np
@@ -55,6 +57,22 @@ def normalize(rewards):
     std = np.std(rewards)
     std = max(1e-8, std) # avoid divide by zero if rewards = 0.
     return (rewards - mean) / (std)
+
+def discount_and_flatten_rewards(rewards, gamma):
+    """Discount rewards across each rollout then flatten all rollouts."""
+    num_envs = len(rewards)
+    # create dictionary indexed by environment id
+    discounted_rewards = {n: None for n in range(num_envs)}
+    for n in range(num_envs):
+        discounted_rewards[n] = discount(rewards[n], gamma)
+    discounted_rewards = list(discounted_rewards.values())
+    return np.concatenate(discounted_rewards)
+
+def flatten(values):
+    """Flatten a dictionary of values."""
+    unraveled = list(values.values())
+    flattened = reduce(operator.concat, unraveled)
+    return flattened
 
 
 #########      results      ##########

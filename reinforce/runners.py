@@ -6,8 +6,8 @@ Supports multiple parallel environments using OpenAI baselines vectorized enviro
 from collections import namedtuple
 import torch
 import numpy as np
-from common.functions import get_device, create_env, create_envs, discount, normalize
-from .functions import create_mlp, flatten_rollouts, print_results
+from common.functions import get_device, create_env, create_envs, discount, normalize, discount_and_flatten_rewards, flatten
+from .functions import create_mlp, print_results, unzip_rollouts
 from .agents import Agent
 
 
@@ -36,9 +36,10 @@ def train(env_name,
             if done:
                 break
 
+        # process rewards
+        normalized_rewards = normalize(discount(rewards, gamma))
         # update model weights
-        processed_rewards = normalize(discount(rewards, gamma))
-        agent.learn(processed_rewards, log_probs)
+        agent.learn(normalized_rewards, log_probs)
         # gather results
         r = result(sum(rewards), t)
         results.append(r)
@@ -63,28 +64,33 @@ def train_multi(env_name,
 
     for i_episode in range(1, n_episodes+1):
         episode_done = [False] * num_envs            # sticky done, as done flag from environment does not persist across steps
-        rollouts = {n: [] for n in range(num_envs)}  # rollouts are a dict indexed by agent id
+        rollouts = {n: [] for n in range(num_envs)}  # rollouts are a dict indexed by environment id
         state = envs.reset()
 
-        # generate rollouts for parallel agents
+        # generate rollouts for parallel environment
         for t in range(1, max_t+1):
             action, log_prob = agent.act(state)
             state, reward, done, _ = envs.step(action)
-            # separate results by agent
+            # separate results by environment
             for n in range(num_envs):
                 if episode_done[n] is False:
-                    # unsqueeze(0) to bring back dimension lost by retrieving from dict
+                    # append results to the list of the associated environment id
+                    # unsqueeze(0) to bring back dimension lost by indexing into vector
                     rollouts[n].append((reward[n], log_prob[n].unsqueeze(0)))
                 if done[n]:
                     episode_done[n] = True
             if all(episode_done):
                 break
 
+        rewards, log_probs = unzip_rollouts(rollouts)
+        # process rewards
+        discounted_rewards = discount_and_flatten_rewards(rewards, gamma)
+        normalized_rewards = normalize(discounted_rewards)
         # flatten rollouts
-        rewards, discounted_rewards, log_probs = flatten_rollouts(rollouts, gamma)
+        rewards = flatten(rewards)
+        log_probs = flatten(log_probs)
         # update model weights
-        processed_rewards = normalize(discounted_rewards)  # flatten already discounts rewards
-        agent.learn(processed_rewards, log_probs)
+        agent.learn(normalized_rewards, log_probs)
         # gather results
         r = result(np.sum(rewards)/num_envs, t/num_envs)  # use raw rewards averaged over number of rollouts
         results.append(r)

@@ -27,24 +27,15 @@ def print_results(results):
           f'cum_steps: {np.sum(steps)}')
 
 
-def flatten_rollouts(rollouts, gamma):
-    """Return flattened version of rollouts with discounted rewards."""
-
-    def flatten_a(dict_of_arrays):
-        """Flatten dict of arrays."""
-        return np.concatenate([val for val in dict_of_arrays.values()]).tolist()
-
+def unzip_rollouts(rollouts):
+    """Unzip a dictionary of rollouts into dictionaries of their underlying values."""
     num_envs = len(rollouts)
-    # create dictionaries indexed by agent id
+    # create dictionaries indexed by environment id
     rewards = {n: None for n in range(num_envs)}
-    discounted_rewards = {n: None for n in range(num_envs)}
     probs = {n: None for n in range(num_envs)}
     states = {n: None for n in range(num_envs)}
     actions = {n: None for n in range(num_envs)}
-
+    # populate dictonaries with unzipped tuples in rollouts
     for n in range(num_envs):
         rewards[n], probs[n], states[n], actions[n] = zip(*rollouts[n])
-        # discount rewards across each rollout
-        discounted_rewards[n] = discount(rewards[n], gamma)
-
-    return flatten_a(rewards), flatten_a(discounted_rewards), flatten_a(probs), flatten_a(states), flatten_a(actions)
+    return rewards, probs, states, actions

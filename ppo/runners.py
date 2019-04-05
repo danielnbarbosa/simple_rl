@@ -6,8 +6,8 @@ Supports multiple parallel environments using OpenAI baselines vectorized enviro
 from collections import namedtuple
 import torch
 import numpy as np
-from common.functions import get_device, create_env, create_envs, discount, normalize
-from .functions import create_mlp, flatten_rollouts, print_results
+from common.functions import get_device, create_env, create_envs, discount, normalize, discount_and_flatten_rewards, flatten
+from .functions import create_mlp, print_results, unzip_rollouts
 from .agents import Agent
 
 
@@ -42,10 +42,11 @@ def train(env_name,
             if done:
                 break
 
+        # process rewards
+        normalized_rewards = normalize(discount(rewards, gamma))
         # update model weights
-        processed_rewards = normalize(discount(rewards, gamma))
         for _ in range(n_updates):
-            agent.learn(processed_rewards, probs, states, actions, eps)
+            agent.learn(normalized_rewards, probs, states, actions, eps)
         # gather results
         r = result(sum(rewards), eps, t)
         results.append(r)
@@ -75,7 +76,7 @@ def train_multi(env_name,
 
     for i_episode in range(1, n_episodes+1):
         episode_done = [False] * num_envs            # sticky done, as done flag from environment does not persist across steps
-        rollouts = {n: [] for n in range(num_envs)}  # rollouts are a dict indexed by agent id
+        rollouts = {n: [] for n in range(num_envs)}  # rollouts are a dict indexed by environment id
         state = envs.reset()
 
         # generate rollouts for parallel agents
@@ -85,6 +86,7 @@ def train_multi(env_name,
             # separate results by agent
             for n in range(num_envs):
                 if episode_done[n] is False:
+                    # append results to the list of the associated environment id
                     rollouts[n].append((reward[n], prob[n], state[n], action[n]))
                 if done[n]:
                     episode_done[n] = True
@@ -92,12 +94,18 @@ def train_multi(env_name,
             if all(episode_done):
                 break
 
+        rewards, probs, states, actions = unzip_rollouts(rollouts)
+        # process rewards
+        discounted_rewards = discount_and_flatten_rewards(rewards, gamma)
+        normalized_rewards = normalize(discounted_rewards)
         # flatten rollouts
-        rewards, discounted_rewards, probs, states, actions = flatten_rollouts(rollouts, gamma)
+        rewards = flatten(rewards)
+        probs = flatten(probs)
+        states = flatten(states)
+        actions = flatten(actions)
         # update model weights
-        processed_rewards = normalize(discounted_rewards) # flatten already discounts rewards
         for _ in range(n_updates):
-            agent.learn(processed_rewards, probs, states, actions, eps)
+            agent.learn(normalized_rewards, probs, states, actions, eps)
         # gather results
         r = result(np.sum(rewards)/num_envs, eps, t/num_envs)  # use raw rewards averaged over number of rollouts
         results.append(r)

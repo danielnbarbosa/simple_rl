@@ -2,8 +2,6 @@
 Local auxillary functions.
 """
 
-import operator
-from functools import reduce
 import numpy as np
 from common.functions import moving_average, discount
 from .models import MLP
@@ -28,27 +26,13 @@ def print_results(results):
           f'cum_steps: {np.sum(steps)}')
 
 
-def flatten_rollouts(rollouts, gamma):
-    """Return flattened version of rollouts with discounted rewards."""
-
-    def flatten_a(dict_of_arrays):
-        """Flatten dict of arrays."""
-        return np.concatenate([val for val in dict_of_arrays.values()]).tolist()
-
-    def flatten_t(dict_of_tuples):
-        """Flatten dict of tuples."""
-        unraveled_dict = [val for val in dict_of_tuples.values()]
-        flattened_list = reduce(operator.concat, unraveled_dict)
-        return flattened_list
-
+def unzip_rollouts(rollouts):
+    """Unzip a dictionary of rollouts into dictionaries of their underlying values."""
     num_envs = len(rollouts)
-    # create dictionaries indexed by agent id
+    # create dictionaries indexed by environment id
     rewards = {n: None for n in range(num_envs)}
-    discounted_rewards = {n: None for n in range(num_envs)}
     log_probs = {n: None for n in range(num_envs)}
-
+    # populate dictonaries with unzipped tuples in rollouts
     for n in range(num_envs):
         rewards[n], log_probs[n] = zip(*rollouts[n])
-        # discount rewards across each rollout
-        discounted_rewards[n] = discount(rewards[n], gamma)
-    return flatten_a(rewards), flatten_a(discounted_rewards), flatten_t(log_probs)
+    return rewards, log_probs
