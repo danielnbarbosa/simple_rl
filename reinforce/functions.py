@@ -5,15 +5,14 @@ Local auxillary functions.
 import operator
 from functools import reduce
 import numpy as np
-from common.functions import get_device, moving_average, discount
+from common.functions import moving_average, discount
 from .models import MLP
 
 
-def create_mlp(env):
+def create_mlp(device, env):
     """Create MLP model based on an environment."""
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n
-    device = get_device()
     return MLP(state_size, action_size).to(device)
 
 

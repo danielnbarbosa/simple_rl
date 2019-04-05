@@ -6,7 +6,7 @@ Supports multiple parallel environments using OpenAI baselines vectorized enviro
 from collections import namedtuple
 import torch
 import numpy as np
-from common.functions import create_env, create_envs, discount, normalize
+from common.functions import get_device, create_env, create_envs, discount, normalize
 from .functions import create_mlp, flatten_rollouts, print_results
 from .agents import Agent
 
@@ -19,9 +19,10 @@ def train(env_name,
          eps_decay=0.999,
          n_updates=4):
     """Training loop for a single environment."""
+    device = get_device()
     env = create_env(env_name, max_t)
-    model = create_mlp(env)
-    agent = Agent(model)
+    model = create_mlp(device, env)
+    agent = Agent(device, model)
     result = namedtuple("Result", field_names=['episode_return', 'epslions', 'steps'])
     results = []
 
@@ -65,9 +66,10 @@ def train_multi(env_name,
                 eps_decay=0.999,
                 n_updates=4):
     """Training loop for multiple parallel environments."""
+    device = get_device()
     envs = create_envs(env_name, max_t, num_envs)
-    model = create_mlp(envs)
-    agent = Agent(model)
+    model = create_mlp(device, envs)
+    agent = Agent(device, model)
     result = namedtuple("Result", field_names=['episode_return', 'epslions', 'steps'])
     results = []
 
@@ -109,10 +111,11 @@ def train_multi(env_name,
 
 def evaluate(env_name, n_episodes=10, max_t=1000, render=True):
     """Evaluation loop."""
+    device = get_device()
     env = create_env(env_name, max_t)
-    model = create_mlp(env)
+    model = create_mlp(device, env)
     model.load_state_dict(torch.load('model.pth'))
-    agent = Agent(model)
+    agent = Agent(device, model)
     result = namedtuple("Result", field_names=['episode_return', 'epslions', 'steps'])
     results = []
 

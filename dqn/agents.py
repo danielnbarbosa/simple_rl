@@ -7,20 +7,18 @@ import numpy as np
 import torch
 import torch.optim as optim
 import torch.nn.functional as F
-from common.functions import get_device
 from .memory import ReplayBuffer
 
 
-device = get_device()
-
 class Agent():
     """Interacts with and learns from the environment."""
-    def __init__(self, models,
+    def __init__(self, device, models,
                  buffer_size=int(1e5),
                  batch_size=64,
                  update_freq=int(1e3),
                  lr=5e-4):
 
+        self.device = device
         self.batch_size = batch_size
         self.update_freq = update_freq
         self.model_updates = 0
@@ -36,7 +34,7 @@ class Agent():
     def act(self, state, eps=0.):
         """Given a state, determine the next action."""
         # convert ndarray to tensor
-        state = torch.from_numpy(state).float().to(device)
+        state = torch.from_numpy(state).float().to(self.device)
         # if state is 1D then expand dim 0 for batch size of 1
         if state.dim() == 1:
             state = state.unsqueeze(0)

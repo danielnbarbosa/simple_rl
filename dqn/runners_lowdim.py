@@ -4,7 +4,7 @@ Training and evaluation runners for low dimensional state spaces.
 
 from collections import namedtuple
 import torch
-from common.functions import create_env
+from common.functions import get_device, create_env
 from .functions import create_mlp, print_results
 from .agents import Agent
 
@@ -17,9 +17,10 @@ def train(env_name,
           eps_end=0.01,
           eps_decay=0.99):
     """Training loop."""
+    device = get_device()
     env = create_env(env_name, max_t)
-    models = create_mlp(env)
-    agent = Agent(models)
+    models = create_mlp(device, env)
+    agent = Agent(device, models)
     result = namedtuple("Result", field_names=['episode_return', 'epsilon', 'buffer_len', 'steps'])
     results = []
     eps = eps_start
@@ -51,10 +52,11 @@ def train(env_name,
 
 def evaluate(env_name, n_episodes=10, max_t=1000, eps=0.05, render=True):
     """Evaluation loop."""
+    device = get_device()
     env = create_env(env_name, max_t)
-    q_net, target_net = create_mlp(env)
+    q_net, target_net = create_mlp(device, env)
     q_net.load_state_dict(torch.load('model.pth'))
-    agent = Agent((q_net, target_net))
+    agent = Agent(device, (q_net, target_net))
     result = namedtuple("Result", field_names=['episode_return', 'epsilon', 'buffer_len', 'steps'])
     results = []
 

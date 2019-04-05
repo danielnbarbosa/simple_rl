@@ -3,23 +3,21 @@ Local auxillary functions.
 """
 
 import numpy as np
-from common.functions import get_device, moving_average
+from common.functions import moving_average
 from .models import MLP, CNN
 
 
-def create_mlp(env):
+def create_mlp(device, env):
     """Create MLP models based on environment."""
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n
-    device = get_device()
     q_net = MLP(state_size, action_size).to(device)
     target_net = MLP(state_size, action_size).to(device)
     return (q_net, target_net)
 
 
-def create_cnn(action_size, frames=4):
+def create_cnn(device, action_size, frames=4):
     """Create CNN models."""
-    device = get_device()
     q_net = CNN(frames, action_size).to(device)
     target_net = CNN(frames, action_size).to(device)
     return (q_net, target_net)
