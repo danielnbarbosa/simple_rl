@@ -31,10 +31,7 @@ class Agent():
 
     def learn(self, rewards, log_probs):
         """Update model weights."""
-        losses = []
-        for i, log_prob in enumerate(log_probs):
-            losses.append(-log_prob * rewards[i])
-        loss = torch.cat(losses).sum()
+        loss = torch.sum(-torch.cat(log_probs) * torch.tensor(rewards).float().detach())
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
