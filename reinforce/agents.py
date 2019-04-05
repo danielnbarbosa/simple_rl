@@ -1,6 +1,6 @@
 """
-Agent: works with a single environment.
-VectorizedAgent: works with multiple parallel environments.
+REINFORCE Agent.
+Works with both single and multiple environments.
 """
 
 import torch
