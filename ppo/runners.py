@@ -129,21 +129,23 @@ def evaluate(env_name, n_episodes=10, max_t=1000, render=True):
     result = namedtuple("Result", field_names=['episode_return', 'epslions', 'steps'])
     results = []
 
-    for i_episode in range(1, n_episodes+1):
-        rewards = []
-        state = env.reset()
+    model.eval()
+    with torch.no_grad():
+        for i_episode in range(1, n_episodes+1):
+            rewards = []
+            state = env.reset()
 
-        for t in range(1, max_t+1):
-            if render:
-                env.render()
-            action, _ = agent.act(state)                    # select an action
-            state, reward, done, _ = env.step(action)       # take action in environment
-            rewards.append(reward)
-            if done:
-                break
+            for t in range(1, max_t+1):
+                if render:
+                    env.render()
+                action, _ = agent.act(state)                    # select an action
+                state, reward, done, _ = env.step(action)       # take action in environment
+                rewards.append(reward)
+                if done:
+                    break
 
-        # gather results
-        r = result(sum(rewards), 0, t)
-        results.append(r)
-        print_results(results)
-    env.close()
+            # gather results
+            r = result(sum(rewards), 0, t)
+            results.append(r)
+            print_results(results)
+        env.close()
