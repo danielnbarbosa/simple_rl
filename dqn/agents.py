@@ -13,14 +13,14 @@ from .memory import ReplayBuffer
 class Agent():
     """Interacts with and learns from the environment."""
     def __init__(self, device, models,
-                 buffer_size=int(1e5),
-                 batch_size=64,
-                 update_freq=int(1e3),
-                 lr=5e-4):
+                 buffer_size=int(2e5),
+                 batch_size=32,
+                 target_net_update=int(1e4),
+                 lr=2.5e-4):
 
         self.device = device
         self.batch_size = batch_size
-        self.update_freq = update_freq
+        self.target_net_update = target_net_update
         self.model_updates = 0
 
         # initialize q_net and target_net with same initial values
@@ -62,8 +62,8 @@ class Agent():
             experiences = self.memory.sample()
             self._backprop_loss(experiences, gamma)
             self.model_updates += 1
-            # replace target_net parameters with q_net ones every update_freq parameter updates
-            if self.model_updates % self.update_freq == 0:
+            # replace target_net parameters with q_net ones every so often
+            if self.model_updates % self.target_net_update == 0:
                 self.target_net.load_state_dict(self.q_net.state_dict())
 
 

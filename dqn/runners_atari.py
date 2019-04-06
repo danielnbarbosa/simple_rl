@@ -21,12 +21,12 @@ from .agents import Agent
 
 
 def train(env_name,
-          n_episodes=10000,
-          max_t=350,
+          n_episodes=100000,
+          max_t=400,
           gamma=0.99,
           eps_start=1.0,
           eps_end=0.1,
-          eps_decay=0.995,
+          eps_decay=0.997,
           action_map={0: 4, 1: 5}):
     """Training loop."""
     device = get_device()

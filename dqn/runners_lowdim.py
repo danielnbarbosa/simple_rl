@@ -21,7 +21,7 @@ def train(env_name,
     device = get_device()
     env = create_env(env_name, max_t)
     models = create_mlp(device, env)
-    agent = Agent(device, models)
+    agent = Agent(device, models, target_net_update=int(1e3))  # lower target net update, small envs won't accumulate as many steps
     result = namedtuple("Result", field_names=['episode_return', 'epsilon', 'buffer_len', 'steps'])
     results = []
     eps = eps_start
