@@ -1,4 +1,4 @@
-#!/anaconda3/envs/simple_rl/bin/python
+#!/usr/bin/env python3
 
 import argparse
 from common.atari import is_atari
