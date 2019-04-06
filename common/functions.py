@@ -78,7 +78,9 @@ def flatten(values):
 #########      results      ##########
 def moving_average(values, window=100):
     """Calculate moving average over window."""
+    # don't run until collecting at least window results
     if len(values) < window:
-        window = len(values)
-    weights = np.repeat(1.0, window)/window
-    return np.convolve(values, weights, 'valid')
+        return [-np.inf]
+    else:
+        weights = np.repeat(1.0, window)/window
+        return np.convolve(values, weights, 'valid')

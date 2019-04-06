@@ -36,6 +36,7 @@ class CNN(nn.Module):
     Convolutional Neural Network used in DQN paper.
     Input shape: [batch_size, frames, 84, 84].
     Output shape: [batch_size, outputs].
+    With 4 frames: 1,685,154 params.
     """
     def __init__(self, frames, outputs):
         super(CNN, self).__init__()
@@ -46,10 +47,10 @@ class CNN(nn.Module):
             nn.ReLU(),
             nn.Conv2d(64, 64, kernel_size=3, stride=1),         #[-1, 64, 7, 7]
             nn.ReLU(),
-            Flatten(),
-            nn.Linear(64*7*7, 512),
+            Flatten(),                                          #[-1, 3136]
+            nn.Linear(64*7*7, 512),                             #[-1, 512]
             nn.ReLU(),
-            nn.Linear(512, outputs)
+            nn.Linear(512, outputs)                             #[-1, outputs]
         )
     def forward(self, x):
         x = x.float() / 255         # normalize input
