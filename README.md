@@ -1,11 +1,11 @@
 ### Introduction
-There are many good deep reinforcement algorithm implementations out there but most use Tensorflow.  For PyTorch all I could find were ones based on PyTorch 0.4.  I wanted something that used modern PyTorch semantics and leveraged the library as much as possible.  So this is what I came up with.
+PyTorch 1.0 implementation of deep reinforcement learning algorithms.  Striving for readability and clarity.
 
 As an overarching goal I am trying to keep things as simple as possible and adhere to the original research papers.  Working through this has been very helpful for me to really understand the algorithms.  Feel free to use it as a working baseline and extend it to suit your needs.  If you find issues please let me know!
 
 
 ### Environments
-To keep things simple, only OpenAI gym environments are used.  CartPole-v0 is the default because it converges quickly.  Other environments that have been tested include: Acrobot-v1 and LunarLander-v2.
+To keep things simple, only OpenAI gym environments are integrated.  CartPole-v0 is the default because it converges quickly.  Other environments with low dimensional state spaces like Acrobot-v1 and LunarLander-v2 as well as all the atari environments like PongDeterministic-v4 can passed in as an option on the command line.
 
 
 ### Algorithms
@@ -34,7 +34,7 @@ pip install gym gym[atari] box2d-py
 
 Then just select the algorithm you want to use and start training: `./run.py ppo`
 
-When training finishes you can evaluate the model: `./run.py ppo --eval`
+When training finishes you can see the agent by evaluating the model: `./run.py ppo --eval`
 
 You can also run on other environments: `./run.py ppo --env Acrobot-v1`
 
