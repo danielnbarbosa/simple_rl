@@ -78,8 +78,9 @@ class Agent():
         q_targets_next = self.target_net(next_states).detach().max(1)[0].unsqueeze(1)
         # calculate q values for current states
         q_targets = rewards + (gamma * q_targets_next * (1 - dones))
-
+        # use mean squared error to calculate loss
         loss = F.mse_loss(q_expected, q_targets)
+        # backprop
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()

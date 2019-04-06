@@ -27,7 +27,7 @@ class Agent():
         # select an action by sampling from probability distribution
         m = Categorical(probs)  # dim = 2
         action = m.sample()     # dim = 1
-        # need to squeeze() because env expects scalar for single environment and 1D array for parallel environments
+        # need to squeeze() because env expects scalar for single environment and 1D array for multiple environments
         # need to unsqueeze() because index tensor for gather must have same dimensions as input
         return action.detach().numpy().squeeze(), probs.gather(1, action.unsqueeze(1)).numpy()
 
@@ -45,8 +45,9 @@ class Agent():
         # clipped function
         clip = torch.clamp(ratio, 1-eps, 1+eps)
         clipped_surrogate = torch.min(ratio*rewards, clip*rewards)
-        # backprop
+        # loss is negative because doing gradient ascent
         loss = -torch.sum(clipped_surrogate)
+        # backprop
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()

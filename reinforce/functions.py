@@ -15,13 +15,12 @@ def create_mlp(device, env):
 
 
 def print_results(results):
-    """Print results."""
+    """Print results.  Pipe separates episode specific from cummulative results."""
     returns, steps = zip(*results)
-    # need to gather at least window results before moving average is accurate
     smoothed_returns = moving_average(returns)
-    print(f'episode: {len(returns)}',          # specific to this episode
+    print(f'episode: {len(returns)}',
           f'return: {returns[-1]:.2f} |',
-          f'avg: {smoothed_returns[-1]:.2f}',  # cummulative
+          f'avg: {smoothed_returns[-1]:.2f}',
           f'max_avg: {np.max(smoothed_returns):.2f}',
           f'cum_steps: {np.sum(steps)}')
 
