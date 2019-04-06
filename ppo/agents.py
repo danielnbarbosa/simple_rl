@@ -22,14 +22,14 @@ class Agent():
         # if state is 1D then expand dim 0 for batch size of 1
         if state.dim() == 1:
             state = state.unsqueeze(0)
-        # calculate action probabilities
+        # calculate action probabilities, need to move to cpu before converting to ndarray
         probs = self.model.forward(state).cpu().detach()
         # select an action by sampling from probability distribution
         m = Categorical(probs)  # dim = 2
         action = m.sample()     # dim = 1
         # need to squeeze() because env expects scalar for single environment and 1D array for multiple environments
         # need to unsqueeze() because index tensor for gather must have same dimensions as input
-        return action.detach().numpy().squeeze(), probs.gather(1, action.unsqueeze(1)).numpy()
+        return action.squeeze().numpy(), probs.gather(1, action.unsqueeze(1)).numpy()
 
     def learn(self, rewards, probs, states, actions, eps):
         """Update model weights."""

@@ -44,10 +44,10 @@ class Agent():
             action_values = self.q_net(state)
         self.q_net.train()
 
-        # epsilon-greedy action selection
+        # epsilon-greedy action selection, need to move to cpu before converting to ndarray
         action_size = action_values.size()[1]
         if random.random() > eps:
-            return np.argmax(action_values.cpu().data.numpy())
+            return np.argmax(action_values.cpu().detach().numpy())
         else:
             return random.choice(np.arange(action_size))
 
