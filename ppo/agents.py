@@ -46,7 +46,7 @@ class Agent():
         clip = torch.clamp(ratio, 1-eps, 1+eps)
         clipped_surrogate = torch.min(ratio*rewards, clip*rewards)
         # loss is negative because doing gradient ascent
-        loss = -torch.sum(clipped_surrogate)
+        loss = -torch.mean(clipped_surrogate)
         # backprop
         self.optimizer.zero_grad()
         loss.backward()
