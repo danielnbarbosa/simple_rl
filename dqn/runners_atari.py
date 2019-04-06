@@ -26,7 +26,7 @@ def train(env_name,
           gamma=0.99,
           eps_start=1.0,
           eps_end=0.1,
-          eps_decay=0.999,
+          eps_decay=0.995,
           action_map={0: 4, 1: 5}):
     """Training loop."""
     device = get_device()
@@ -54,7 +54,7 @@ def train(env_name,
         # gather results
         r = result(episode_return, eps, len(agent.memory), t)
         results.append(r)
-        if i_episode % 1 == 0:
+        if i_episode % 10 == 0:
             torch.save(agent.q_net.state_dict(), 'model.pth')
             print_results(results)
         # decay epsilon
