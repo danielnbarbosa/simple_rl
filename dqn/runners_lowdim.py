@@ -4,7 +4,8 @@ Training and evaluation runners for low dimensional state spaces.
 
 from collections import namedtuple
 import torch
-from common.functions import get_device, create_env
+from common.misc import get_device
+from common.environments import create_env
 from .functions import create_mlp, print_results
 from .agents import Agent
 

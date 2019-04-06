@@ -1,9 +1,9 @@
 """
-Local auxillary functions.
+Functions specific to DQN.
 """
 
 import numpy as np
-from common.functions import moving_average
+from common.misc import moving_average
 from .models import MLP, CNN
 
 

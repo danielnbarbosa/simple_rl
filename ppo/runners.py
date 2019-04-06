@@ -6,7 +6,9 @@ Supports multiple parallel environments using OpenAI baselines vectorized enviro
 from collections import namedtuple
 import torch
 import numpy as np
-from common.functions import get_device, create_env, create_envs, discount, normalize, discount_and_flatten_rewards, flatten
+from common.misc import get_device
+from common.environments import create_env, create_envs
+from common.rollouts import discount, normalize, discount_and_flatten_rewards, flatten
 from .functions import create_mlp, print_results, unzip_rollouts
 from .agents import Agent
 

@@ -13,7 +13,8 @@ Identical to lowdim runner apart from the following:
 import time
 from collections import namedtuple
 import torch
-from common.functions import get_device, create_env
+from common.misc import get_device
+from common.environments import create_env
 from common.atari import env_reset_frames, env_step_frames
 from .functions import create_cnn, print_results
 from .agents import Agent

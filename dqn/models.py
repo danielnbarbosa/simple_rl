@@ -1,5 +1,5 @@
 """
-As models are predicting Q-values, they don't use activation functions.
+Models are predicting Q-values, so they don't use activation functions.
 """
 
 import torch.nn as nn

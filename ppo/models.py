@@ -1,5 +1,5 @@
 """
-As models are predicting action probabilities they use a softmax activation function.
+Models are predicting action probabilities, so they use a softmax activation function.
 """
 
 import torch.nn as nn

@@ -6,7 +6,7 @@ import random
 from collections import namedtuple, deque
 import torch
 import numpy as np
-from common.functions import get_device
+from common.misc import get_device
 
 device = get_device()
 

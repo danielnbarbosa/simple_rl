@@ -1,5 +1,5 @@
 """
-Shared Atari related functions.
+Functions for processing atari games.
 """
 
 import numpy as np

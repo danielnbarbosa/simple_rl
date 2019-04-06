@@ -3,7 +3,7 @@ Run tests using nosetests.
 """
 
 import numpy as np
-from common.functions import discount, normalize, moving_average
+from common.rollouts import discount, normalize, moving_average
 
 def test_discount():
     rewards = [10.0, 0.0, -50.0]
