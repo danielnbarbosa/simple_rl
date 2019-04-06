@@ -124,7 +124,7 @@ def evaluate(env_name, n_episodes=10, max_t=1000, render=True):
     device = get_device()
     env = create_env(env_name, max_t)
     model = create_mlp(device, env)
-    model.load_state_dict(torch.load('model.pth'))
+    model.load_state_dict(torch.load('model.pth', map_location='cpu'))
     agent = Agent(device, model)
     result = namedtuple("Result", field_names=['episode_return', 'epslions', 'steps'])
     results = []

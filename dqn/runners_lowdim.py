@@ -56,7 +56,7 @@ def evaluate(env_name, n_episodes=10, max_t=1000, eps=0.05, render=True):
     device = get_device()
     env = create_env(env_name, max_t)
     q_net, target_net = create_mlp(device, env)
-    q_net.load_state_dict(torch.load('model.pth'))
+    q_net.load_state_dict(torch.load('model.pth', map_location='cpu'))
     agent = Agent(device, (q_net, target_net))
     result = namedtuple("Result", field_names=['episode_return', 'epsilon', 'buffer_len', 'steps'])
     results = []
