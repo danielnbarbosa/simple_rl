@@ -18,7 +18,7 @@ def discount(rewards, gamma):
 
 
 def normalize(rewards):
-    """Normalize rewards."""
+    """Normalize rewards: subtract the mean and divide by standard deviation."""
     mean = np.mean(rewards)
     std = np.std(rewards)
     std = max(1e-8, std) # avoid divide by zero if rewards = 0.
