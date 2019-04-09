@@ -3,6 +3,7 @@ Training and evaluation runners.
 Supports multiple parallel environments using OpenAI baselines vectorized environment.
 """
 
+import time
 from collections import namedtuple
 import torch
 import numpy as np
@@ -124,6 +125,7 @@ def evaluate(env_name, n_episodes=10, max_t=5000, render=True, action_map={0: 4,
 
             for t in range(1, max_t+1):
                 if render:
+                    #time.sleep(.05)
                     env.render()
                 action, _ = agent.act(state)                                            # select an action
                 action = action.item()
