@@ -4,7 +4,7 @@ Functions specific to REINFORCE.
 
 import numpy as np
 from common.misc import moving_average
-from .models import MLP
+from .models import MLP, CNN
 
 
 def create_mlp(device, env):
@@ -12,6 +12,11 @@ def create_mlp(device, env):
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n
     return MLP(state_size, action_size).to(device)
+
+
+def create_cnn(device, action_size, frames=4):
+    """Create CNN models."""
+    return CNN(frames, action_size).to(device)
 
 
 def print_results(results):
