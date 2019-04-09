@@ -23,7 +23,7 @@ def train(env_name,
     device = get_device()
     env = create_env(env_name, max_t)
     model = create_cnn(device, action_size=len(action_map))
-    agent = Agent(device, model, lr=2.5e-4)
+    agent = Agent(device, model, lr=1e-4)
     result = namedtuple("Result", field_names=['episode_return', 'steps'])
     results = []
 
@@ -48,7 +48,7 @@ def train(env_name,
         # gather results
         r = result(sum(rewards), t)
         results.append(r)
-        if i_episode % 1 == 0:
+        if i_episode % 10 == 0:
             torch.save(agent.model.state_dict(), 'model.pth')
             print_results(results)
     env.close()
@@ -58,13 +58,13 @@ def train_multi(env_name,
                 n_episodes=100000,
                 max_t=400,
                 gamma=0.99,
-                num_envs=6,
+                num_envs=12,
                 action_map={0: 4, 1: 5}):
     """Training loop for multiple parallel environments."""
     device = get_device()
     envs = create_envs(env_name, max_t, num_envs)
     model = create_cnn(device, action_size=len(action_map))
-    agent = Agent(device, model, lr=2.5e-4)
+    agent = Agent(device, model, lr=1e-4)
     result = namedtuple("Result", field_names=['episode_return', 'steps'])
     results = []
 
@@ -100,7 +100,7 @@ def train_multi(env_name,
         # gather results
         r = result(np.sum(rewards)/num_envs, t/num_envs)  # use raw rewards averaged over number of rollouts
         results.append(r)
-        if i_episode % 1 == 0:
+        if i_episode % 10 == 0:
             torch.save(agent.model.state_dict(), 'model.pth')
             print_results(results)
     envs.close()

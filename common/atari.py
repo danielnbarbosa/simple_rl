@@ -3,7 +3,7 @@ Functions for processing atari games.
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import cv2
 
 def is_atari(env_name):
