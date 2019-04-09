@@ -23,7 +23,7 @@ def train(env_name,
     device = get_device()
     env = create_env(env_name, max_t)
     model = create_cnn(device, action_size=len(action_map))
-    agent = Agent(device, model)
+    agent = Agent(device, model, lr=2.5e-4)
     result = namedtuple("Result", field_names=['episode_return', 'steps'])
     results = []
 
@@ -58,13 +58,13 @@ def train_multi(env_name,
                 n_episodes=100000,
                 max_t=400,
                 gamma=0.99,
-                num_envs=3,
+                num_envs=6,
                 action_map={0: 4, 1: 5}):
     """Training loop for multiple parallel environments."""
     device = get_device()
     envs = create_envs(env_name, max_t, num_envs)
     model = create_cnn(device, action_size=len(action_map))
-    agent = Agent(device, model)
+    agent = Agent(device, model, lr=2.5e-4)
     result = namedtuple("Result", field_names=['episode_return', 'steps'])
     results = []
 

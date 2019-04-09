@@ -10,7 +10,7 @@ class Flatten(nn.Module):
     def forward(self, x):
         return x.view(x.size()[0], -1)
 
-        
+
 class MLP(nn.Module):
     """
     Multi layer perceptron with two hidden layers.
