@@ -12,9 +12,7 @@ To keep things simple, only OpenAI gym environments are integrated.  CartPole-v0
 The following algorithms have been implemented:
 - dqn
 - reinforce
-- reinforce_multi (REINFORCE with multiple parallel environments)
 - ppo
-- ppo_multi (PPO with multiple parallel environments)
 
 
 ### Dependencies
@@ -28,8 +26,9 @@ First create a virtual environment with all the dependencies installed:
 ```
 conda create -y -n simple_rl python=3.6 anaconda
 conda activate simple_rl
-conda install -y pytorch torchvision opencv -c pytorch
-pip install gym gym[atari] box2d-py
+conda install -y -c pytorch pytorch torchvision opencv
+pip install gym box2d-py
+pip install gym[atari]
 ```
 
 Then just select the algorithm you want to use and start training: `./run.py ppo`
@@ -38,6 +37,7 @@ When training finishes you can see the agent by evaluating the model: `./run.py 
 
 You can also run on other environments: `./run.py ppo --env Acrobot-v1`
 
+Some algorithms support multiple parallel environments: `./run.py ppo --multi --env Acrobot-v1`
 
 ### Acknowledgements
 Thank you to the following code examples that helped me build this.
