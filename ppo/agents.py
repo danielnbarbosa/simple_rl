@@ -59,6 +59,8 @@ class Agent():
         In this case we will use the gradients during backprop so we don't want to detach as in act().
         """
         states = np.asarray(states)
+        states = states.squeeze()
+        #print(states.shape)
         states = torch.from_numpy(states).float().to(self.device)
         probs = self.model.forward(states)  # dim = 2
         # need to unsqueeze() because index tensor for gather must have same dimensions as input

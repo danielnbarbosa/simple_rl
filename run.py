@@ -31,24 +31,24 @@ elif args.algo == 'reinforce_multi':
         from reinforce.runners_atari import train_multi as train
         from reinforce.runners_atari import evaluate
     else:
-        from reinforce.runners import train_multi as train
-        from reinforce.runners import evaluate
+        from reinforce.runners_lowdim import train_multi as train
+        from reinforce.runners_lowdim import evaluate
 
 elif args.algo == 'ppo':
     if is_atari(args.env):
         from ppo.runners_atari import train
         from ppo.runners_atari import evaluate
     else:
-        from ppo.runners import train
-        from ppo.runners import evaluate
-        
+        from ppo.runners_lowdim import train
+        from ppo.runners_lowdim import evaluate
+
 elif args.algo == 'ppo_multi':
     if is_atari(args.env):
         from ppo.runners_atari import train_multi as train
         from ppo.runners_atari import evaluate
     else:
-        from ppo.runners import train_multi as train
-        from ppo.runners import evaluate
+        from ppo.runners_lowdim import train_multi as train
+        from ppo.runners_lowdim import evaluate
 
 if args.eval:
     evaluate(args.env)
