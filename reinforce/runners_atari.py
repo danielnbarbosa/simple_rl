@@ -99,7 +99,7 @@ def train_multi(env_name,
         # update model weights
         agent.learn(normalized_rewards, log_probs)
         # gather results
-        r = result(np.sum(rewards)/num_envs, t/num_envs)  # use raw rewards averaged over number of rollouts
+        r = result(np.sum(rewards)/num_envs, t)  # use raw rewards averaged over number of rollouts, all steps
         results.append(r)
         if i_episode % 10 == 0:
             torch.save(agent.model.state_dict(), 'model.pth')
